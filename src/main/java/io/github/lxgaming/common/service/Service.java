@@ -16,11 +16,16 @@
 
 package io.github.lxgaming.common.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 public abstract class Service implements Runnable {
+    
+    private static final Logger LOGGER = LoggerFactory.getLogger(Service.class);
     
     private long delay;
     private long interval;
@@ -36,6 +41,7 @@ public abstract class Service implements Runnable {
         try {
             execute();
         } catch (Exception ex) {
+            LOGGER.error("Encountered an error while executing {}", getClass().getName(), ex);
             scheduledFuture.cancel(false);
         }
     }
