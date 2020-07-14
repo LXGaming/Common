@@ -22,5 +22,8 @@ install:
 script:
   - ./gradlew clean build
 
+after_success:
+  - ./gradlew bintrayUpload
+
 notifications:
   email: false
