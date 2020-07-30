@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.github.lxgaming.common.service;
+package io.github.lxgaming.common.task;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,13 +23,13 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-public abstract class Service implements Runnable {
+public abstract class Task implements Runnable {
     
-    private static final Logger LOGGER = LoggerFactory.getLogger(Service.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Task.class);
     
     private long delay;
     private long interval;
-    private ServiceType serviceType;
+    private Type type;
     private ScheduledFuture<?> scheduledFuture;
     
     public abstract boolean prepare();
@@ -48,14 +48,14 @@ public abstract class Service implements Runnable {
     
     public final void schedule(ScheduledExecutorService scheduledExecutorService) throws Exception {
         ScheduledFuture<?> scheduledFuture;
-        if (serviceType == ServiceType.DEFAULT) {
+        if (type == Type.DEFAULT) {
             scheduledFuture = scheduledExecutorService.schedule(this, delay, TimeUnit.MILLISECONDS);
-        } else if (serviceType == ServiceType.FIXED_DELAY) {
+        } else if (type == Type.FIXED_DELAY) {
             scheduledFuture = scheduledExecutorService.scheduleWithFixedDelay(this, delay, interval, TimeUnit.MILLISECONDS);
-        } else if (serviceType == ServiceType.FIXED_RATE) {
+        } else if (type == Type.FIXED_RATE) {
             scheduledFuture = scheduledExecutorService.scheduleAtFixedRate(this, delay, interval, TimeUnit.MILLISECONDS);
         } else {
-            throw new NullPointerException("ServiceType is null");
+            throw new NullPointerException("Type is null");
         }
         
         this.scheduledFuture = scheduledFuture;
@@ -77,12 +77,12 @@ public abstract class Service implements Runnable {
         this.interval = unit.toMillis(interval);
     }
     
-    public final ServiceType getServiceType() {
-        return serviceType;
+    public final Type getType() {
+        return type;
     }
     
-    protected final void serviceType(ServiceType serviceType) {
-        this.serviceType = serviceType;
+    protected final void type(Type type) {
+        this.type = type;
     }
     
     public final ScheduledFuture<?> getScheduledFuture() {
@@ -91,5 +91,27 @@ public abstract class Service implements Runnable {
     
     protected final void scheduledFuture(ScheduledFuture<?> scheduledFuture) {
         this.scheduledFuture = scheduledFuture;
+    }
+    
+    public enum Type {
+        
+        DEFAULT("Default"),
+        FIXED_DELAY("Fixed Delay"),
+        FIXED_RATE("Fixed Rate");
+        
+        private final String name;
+        
+        Type(String name) {
+            this.name = name;
+        }
+        
+        public String getName() {
+            return name;
+        }
+        
+        @Override
+        public String toString() {
+            return name().toLowerCase();
+        }
     }
 }
