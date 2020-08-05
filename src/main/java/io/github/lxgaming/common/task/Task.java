@@ -16,6 +16,7 @@
 
 package io.github.lxgaming.common.task;
 
+import io.github.lxgaming.common.Preconditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +31,8 @@ public abstract class Task implements Runnable {
     private long delay;
     private long interval;
     private Type type;
-    private ScheduledFuture<?> scheduledFuture;
+    private volatile Exception exception;
+    private volatile ScheduledFuture<?> scheduledFuture;
     
     public abstract boolean prepare();
     
@@ -42,23 +44,56 @@ public abstract class Task implements Runnable {
             execute();
         } catch (Exception ex) {
             LOGGER.error("Encountered an error while executing {}", getClass().getName(), ex);
-            scheduledFuture.cancel(false);
+            exception(ex);
+            getScheduledFuture().cancel(false);
+        }
+    }
+    
+    public boolean await() {
+        try {
+            if (getScheduledFuture() == null) {
+                return false;
+            }
+            
+            getScheduledFuture().get();
+            return getException() == null;
+        } catch (Exception ex) {
+            if (getException() == null) {
+                exception(ex);
+            }
+            
+            return false;
+        }
+    }
+    
+    public boolean await(long timeout, TimeUnit unit) {
+        try {
+            if (getScheduledFuture() == null) {
+                return false;
+            }
+            
+            getScheduledFuture().get(timeout, unit);
+            return getException() == null;
+        } catch (Exception ex) {
+            if (getException() == null) {
+                exception(ex);
+            }
+            
+            return false;
         }
     }
     
     public final void schedule(ScheduledExecutorService scheduledExecutorService) throws Exception {
-        ScheduledFuture<?> scheduledFuture;
-        if (type == Type.DEFAULT) {
-            scheduledFuture = scheduledExecutorService.schedule(this, delay, TimeUnit.MILLISECONDS);
-        } else if (type == Type.FIXED_DELAY) {
-            scheduledFuture = scheduledExecutorService.scheduleWithFixedDelay(this, delay, interval, TimeUnit.MILLISECONDS);
-        } else if (type == Type.FIXED_RATE) {
-            scheduledFuture = scheduledExecutorService.scheduleAtFixedRate(this, delay, interval, TimeUnit.MILLISECONDS);
-        } else {
-            throw new NullPointerException("Type is null");
-        }
+        Preconditions.checkNotNull(type, "type");
         
-        this.scheduledFuture = scheduledFuture;
+        exception(null);
+        if (type == Type.DEFAULT) {
+            scheduledFuture(scheduledExecutorService.schedule(this, delay, TimeUnit.MILLISECONDS));
+        } else if (type == Type.FIXED_DELAY) {
+            scheduledFuture(scheduledExecutorService.scheduleWithFixedDelay(this, delay, interval, TimeUnit.MILLISECONDS));
+        } else if (type == Type.FIXED_RATE) {
+            scheduledFuture(scheduledExecutorService.scheduleAtFixedRate(this, delay, interval, TimeUnit.MILLISECONDS));
+        }
     }
     
     public final long getDelay() {
@@ -83,6 +118,14 @@ public abstract class Task implements Runnable {
     
     protected final void type(Type type) {
         this.type = type;
+    }
+    
+    public final Exception getException() {
+        return exception;
+    }
+    
+    protected final void exception(Exception exception) {
+        this.exception = exception;
     }
     
     public final ScheduledFuture<?> getScheduledFuture() {
