@@ -17,11 +17,10 @@ cache:
 before_install:
   - chmod +x ./gradlew
 
-install:
-  - ./gradlew clean --refresh-dependencies
+install: skip
 
 script:
-  - ./gradlew build --refresh-dependencies
+  - ./gradlew clean build --refresh-dependencies
 
 after_success:
   - ./gradlew bintrayUpload
