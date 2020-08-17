@@ -40,4 +40,4 @@ jobs:
         BUILD_NUMBER: ${{ github.run_number }}
         BINTRAY_USER: lxgaming
         BINTRAY_KEY: ${{ secrets.BINTRAY_KEY }}
-      run: ./gradlew publish --console=plain
+      run: ./gradlew bintrayUpload --console=plain
