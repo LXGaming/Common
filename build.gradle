@@ -71,8 +71,8 @@ publishing {
                     }
                 }
                 scm {
-                    connection = "scm:git@github.com:LXGaming/Common.git"
-                    developerConnection = "scm:git@github.com:LXGaming/Common.git"
+                    connection = "scm:git:https://github.com/LXGaming/Common.git"
+                    developerConnection = "scm:git:https://github.com/LXGaming/Common.git"
                     url = "https://github.com/LXGaming/Common"
                 }
             }
