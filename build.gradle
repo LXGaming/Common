@@ -2,7 +2,7 @@ plugins {
     id "java"
     id "java-library"
     id "maven-publish"
-    id "net.kyori.blossom" version "1.2.0"
+    id "net.kyori.blossom" version "1.3.0"
     id "signing"
 }
 
@@ -18,9 +18,6 @@ blossom {
 }
 
 configurations {
-    provided {
-        compile.extendsFrom(provided)
-    }
 }
 
 repositories {
@@ -29,32 +26,12 @@ repositories {
 
 dependencies {
     api("org.slf4j:slf4j-api:1.7.30")
-    testCompile("org.junit.jupiter:junit-jupiter-engine:5.7.0")
+    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.7.0")
 }
 
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    archiveClassifier.set("javadoc")
-    from javadoc.destinationDir
-}
-
-task sourcesJar(type: Jar, dependsOn: classes) {
-    archiveClassifier.set("sources")
-    from sourceSets.main.allSource
-}
-
-artifacts {
-    archives javadocJar
-    archives sourcesJar
-}
-
-jar {
-    from {
-        (configurations.compile - configurations.provided).findAll({
-            it.isDirectory() || it.name.endsWith(".jar")
-        }).collect({
-            it.isDirectory() ? it : zipTree(it)
-        })
-    }
+java {
+    withJavadocJar()
+    withSourcesJar()
 }
 
 javadoc {
@@ -73,8 +50,6 @@ publishing {
             groupId group
             artifactId archivesBaseName
             version version
-            artifact javadocJar
-            artifact sourcesJar
             pom {
                 name = "Common"
                 description = "Library with common utils"
