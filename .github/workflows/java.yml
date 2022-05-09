@@ -1,14 +1,14 @@
-name: CI
+name: Java
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
 
 jobs:
-  build:
-    name: Build
+  java:
+    name: Java
     runs-on: ubuntu-latest
     defaults:
       run:
