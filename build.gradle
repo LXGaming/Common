@@ -1,105 +1,98 @@
 plugins {
-    id "java"
-    id "java-library"
-    id "maven-publish"
-    id "net.kyori.blossom" version "1.3.0"
-    id "signing"
 }
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+subprojects {
+    apply plugin: "java"
+    apply plugin: "maven-publish"
+    apply plugin: "signing"
 
-group = "io.github.lxgaming"
-archivesBaseName = "common"
-version = "1.1.2"
+    group = "io.github.lxgaming"
 
-blossom {
-    replaceToken("@version@", version)
-}
-
-configurations {
-}
-
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    api("org.slf4j:slf4j-api:1.7.32")
-    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.8.2")
-}
-
-java {
-    withJavadocJar()
-    withSourcesJar()
-}
-
-javadoc {
-    failOnError = false
-}
-
-processResources {
-    from("LICENSE")
-    rename("LICENSE", "LICENSE-Common")
-}
-
-publishing {
-    publications {
-        mavenPublication(MavenPublication) {
-            from components.java
-            groupId group
-            artifactId archivesBaseName
-            version version
-            pom {
-                name = "Common"
-                description = "Library with common utils"
-                url = "https://github.com/LXGaming/Common"
-                developers {
-                    developer {
-                        id = "lxgaming"
-                        name = "LXGaming"
-                    }
-                }
-                issueManagement {
-                    system = "GitHub Issues"
-                    url = "https://github.com/LXGaming/Common/issues"
-                }
-                licenses {
-                    license {
-                        name = "The Apache License, Version 2.0"
-                        url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
-                    }
-                }
-                scm {
-                    connection = "scm:git:https://github.com/LXGaming/Common.git"
-                    developerConnection = "scm:git:https://github.com/LXGaming/Common.git"
-                    url = "https://github.com/LXGaming/Common"
-                }
-            }
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(8)
         }
     }
+
     repositories {
-        if (project.hasProperty("sonatype.username") && project.hasProperty("sonatype.password")) {
-            maven {
-                name = "sonatype"
-                url = version.contains("-SNAPSHOT") ? "https://s01.oss.sonatype.org/content/repositories/snapshots" : "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2"
-                credentials {
-                    username project.property("sonatype.username")
-                    password project.property("sonatype.password")
+        mavenCentral()
+    }
+
+    dependencies {
+        testImplementation("org.junit.jupiter:junit-jupiter-engine:5.8.2")
+    }
+
+    java {
+        withJavadocJar()
+        withSourcesJar()
+    }
+
+    javadoc {
+        failOnError = false
+    }
+
+    processResources {
+        from("../LICENSE")
+        rename("LICENSE", "LICENSE-Common")
+    }
+
+    publishing {
+        publications {
+            mavenPublication(MavenPublication) {
+                groupId group
+                artifactId archivesBaseName
+                version version
+                pom {
+                    name = "Common"
+                    description = "Library with common utils"
+                    url = "https://github.com/LXGaming/Common"
+                    developers {
+                        developer {
+                            id = "lxgaming"
+                            name = "LXGaming"
+                        }
+                    }
+                    issueManagement {
+                        system = "GitHub Issues"
+                        url = "https://github.com/LXGaming/Common/issues"
+                    }
+                    licenses {
+                        license {
+                            name = "The Apache License, Version 2.0"
+                            url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+                        }
+                    }
+                    scm {
+                        connection = "scm:git:https://github.com/LXGaming/Common.git"
+                        developerConnection = "scm:git:https://github.com/LXGaming/Common.git"
+                        url = "https://github.com/LXGaming/Common"
+                    }
+                }
+            }
+        }
+        repositories {
+            if (project.hasProperty("sonatype.username") && project.hasProperty("sonatype.password")) {
+                maven {
+                    name = "sonatype"
+                    url = version.contains("-SNAPSHOT") ? "https://s01.oss.sonatype.org/content/repositories/snapshots" : "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2"
+                    credentials {
+                        username project.property("sonatype.username")
+                        password project.property("sonatype.password")
+                    }
                 }
             }
         }
     }
-}
 
-signing {
-    sign publishing.publications
-}
-
-test {
-    testLogging {
-        exceptionFormat = "full"
+    signing {
+        sign publishing.publications
     }
 
-    useJUnitPlatform()
+    test {
+        testLogging {
+            exceptionFormat = "full"
+        }
+
+        useJUnitPlatform()
+    }
 }
