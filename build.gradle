@@ -45,7 +45,6 @@ subprojects {
                 version version
                 pom {
                     name = "Common"
-                    description = "Library with common utils"
                     url = "https://github.com/LXGaming/Common"
                     developers {
                         developer {
