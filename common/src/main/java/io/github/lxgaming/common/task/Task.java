@@ -58,10 +58,11 @@ public abstract class Task implements Runnable {
             getScheduledFuture().get();
             return getException() == null;
         } catch (Exception ex) {
-            if (getException() == null) {
-                exception(ex);
+            if (getException() != null) {
+                ex.addSuppressed(getException());
             }
             
+            exception(ex);
             return false;
         }
     }
@@ -75,10 +76,11 @@ public abstract class Task implements Runnable {
             getScheduledFuture().get(timeout, unit);
             return getException() == null;
         } catch (Exception ex) {
-            if (getException() == null) {
-                exception(ex);
+            if (getException() != null) {
+                ex.addSuppressed(getException());
             }
             
+            exception(ex);
             return false;
         }
     }
