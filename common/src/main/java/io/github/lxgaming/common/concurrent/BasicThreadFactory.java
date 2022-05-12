@@ -16,6 +16,9 @@
 
 package io.github.lxgaming.common.concurrent;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -26,19 +29,19 @@ public class BasicThreadFactory implements ThreadFactory {
     private final String format;
     private final Integer priority;
     
-    private BasicThreadFactory(Boolean daemon, String format, Integer priority) {
+    private BasicThreadFactory(@Nullable Boolean daemon, @Nullable String format, @Nullable Integer priority) {
         this.counter = new AtomicLong();
         this.daemon = daemon;
         this.format = format;
         this.priority = priority;
     }
     
-    public static Builder builder() {
+    public static @NotNull Builder builder() {
         return new Builder();
     }
     
     @Override
-    public Thread newThread(Runnable r) {
+    public @Nullable Thread newThread(@NotNull Runnable r) {
         Thread thread = new Thread(r);
         
         if (daemon != null) {
@@ -65,21 +68,21 @@ public class BasicThreadFactory implements ThreadFactory {
         private Builder() {
         }
         
-        public BasicThreadFactory build() {
+        public @NotNull BasicThreadFactory build() {
             return new BasicThreadFactory(daemon, format, priority);
         }
         
-        public Builder daemon(boolean daemon) {
+        public @NotNull Builder daemon(boolean daemon) {
             this.daemon = daemon;
             return this;
         }
         
-        public Builder format(String format) {
+        public @NotNull Builder format(@Nullable String format) {
             this.format = format;
             return this;
         }
         
-        public Builder priority(int priority) {
+        public @NotNull Builder priority(int priority) {
             this.priority = priority;
             return this;
         }

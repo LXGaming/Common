@@ -17,6 +17,8 @@
 package io.github.lxgaming.common.task;
 
 import io.github.lxgaming.common.Preconditions;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -62,7 +64,7 @@ public abstract class Task implements Runnable {
         }
     }
     
-    public boolean await(long timeout, TimeUnit unit) {
+    public boolean await(long timeout, @NotNull TimeUnit unit) {
         try {
             if (getScheduledFuture() == null) {
                 return false;
@@ -80,7 +82,7 @@ public abstract class Task implements Runnable {
         }
     }
     
-    public final void schedule(ScheduledExecutorService scheduledExecutorService) throws Exception {
+    public final void schedule(@NotNull ScheduledExecutorService scheduledExecutorService) throws Exception {
         Preconditions.checkNotNull(type, "type");
         
         exception(null);
@@ -97,7 +99,7 @@ public abstract class Task implements Runnable {
         return delay;
     }
     
-    protected final void delay(long delay, TimeUnit unit) {
+    protected final void delay(long delay, @NotNull TimeUnit unit) {
         this.delay = unit.toMillis(delay);
     }
     
@@ -105,31 +107,31 @@ public abstract class Task implements Runnable {
         return interval;
     }
     
-    protected final void interval(long interval, TimeUnit unit) {
+    protected final void interval(long interval, @NotNull TimeUnit unit) {
         this.interval = unit.toMillis(interval);
     }
     
-    public final Type getType() {
+    public final @Nullable Type getType() {
         return type;
     }
     
-    protected final void type(Type type) {
+    protected final void type(@NotNull Type type) {
         this.type = type;
     }
     
-    public final Exception getException() {
+    public final @Nullable Exception getException() {
         return exception;
     }
     
-    protected final void exception(Exception exception) {
+    protected final void exception(@Nullable Exception exception) {
         this.exception = exception;
     }
     
-    public final ScheduledFuture<?> getScheduledFuture() {
+    public final @Nullable ScheduledFuture<?> getScheduledFuture() {
         return scheduledFuture;
     }
     
-    protected final void scheduledFuture(ScheduledFuture<?> scheduledFuture) {
+    protected final void scheduledFuture(@NotNull ScheduledFuture<?> scheduledFuture) {
         this.scheduledFuture = scheduledFuture;
     }
     
@@ -141,11 +143,11 @@ public abstract class Task implements Runnable {
         
         private final String name;
         
-        Type(String name) {
+        Type(@NotNull String name) {
             this.name = name;
         }
         
-        public String getName() {
+        public @NotNull String getName() {
             return name;
         }
         
