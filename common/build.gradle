@@ -1,2 +1,8 @@
 archivesBaseName = "common"
 description = "Library with common utils"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(8)
+    }
+}
