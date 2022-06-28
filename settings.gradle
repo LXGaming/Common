@@ -1,1 +1,8 @@
 include "common"
+
+[
+    "inject"
+].each {
+    include(it)
+    findProject(":$it")?.name = "common-$it"
+}

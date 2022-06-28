@@ -1,0 +1,2 @@
+archivesBaseName = "common-inject"
+description = "Lightweight* dependency injection framework for Java"
