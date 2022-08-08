@@ -1,8 +1,18 @@
 archivesBaseName = "common"
-description = "Library with common utils"
 
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(8)
+    }
+}
+
+publishing {
+    publications {
+        mavenPublication(MavenPublication) {
+            from components.java
+            pom {
+                description = "Library with common utils"
+            }
+        }
     }
 }

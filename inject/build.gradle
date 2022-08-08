@@ -1,2 +1,12 @@
 archivesBaseName = "common-inject"
-description = "Lightweight* dependency injection framework for Java"
+
+publishing {
+    publications {
+        mavenPublication(MavenPublication) {
+            from components.java
+            pom {
+                description = "Lightweight* dependency injection framework for Java"
+            }
+        }
+    }
+}
