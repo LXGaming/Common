@@ -23,11 +23,35 @@ import java.util.Collection;
 
 public interface ServiceProvider {
     
+    /**
+     * Creates a new {@link ServiceScope} that can be used to resolve scoped services.
+     *
+     * @return a {@link ServiceScope} that can be used to resolve scoped services
+     */
     @NotNull ServiceScope createScope();
     
+    /**
+     * Get service of class {@code serviceClass} from the {@link ServiceProvider}.
+     *
+     * @param serviceClass The service class
+     * @return a service object of class {@code serviceClass}
+     * @throws IllegalStateException if there is no service of class {@code serviceClass}
+     */
     <T> @NotNull T getRequiredService(@NotNull Class<T> serviceClass) throws IllegalStateException;
     
+    /**
+     * Get service of class {@code serviceClass} from the {@link ServiceProvider}.
+     *
+     * @param serviceClass The service class
+     * @return a service object of class {@code serviceClass} or null if there is no such service
+     */
     <T> @Nullable T getService(@NotNull Class<T> serviceClass);
     
+    /**
+     * Get a collection of services of class {@code serviceClass} from the {@link ServiceProvider}.
+     *
+     * @param serviceClass The service class
+     * @return a collection of services of class {@code serviceClass}
+     */
     <T> @NotNull Collection<T> getServices(@NotNull Class<T> serviceClass);
 }

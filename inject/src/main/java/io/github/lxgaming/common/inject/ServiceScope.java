@@ -18,6 +18,10 @@ package io.github.lxgaming.common.inject;
 
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * The {@link AutoCloseable#close()} method ends the scope lifetime. Once close is called,
+ * any {@link ServiceLifetime#SCOPED} services that have been resolved from the {@link ServiceProvider} will be closed.
+ */
 public class ServiceScope implements AutoCloseable {
     
     protected final ServiceProviderImpl serviceProvider;
@@ -31,6 +35,11 @@ public class ServiceScope implements AutoCloseable {
         serviceProvider.close();
     }
     
+    /**
+     * The {@link ServiceProvider} used to resolve services from the scope.
+     *
+     * @return the {@link ServiceProvider}
+     */
     public @NotNull ServiceProvider getServiceProvider() {
         return serviceProvider;
     }
