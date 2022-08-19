@@ -58,7 +58,7 @@ public class ServiceProviderImpl implements ServiceProvider, AutoCloseable {
     public <T> @NotNull T getRequiredService(@NotNull Class<T> serviceClass) throws IllegalStateException {
         var service = getService(serviceClass);
         if (service == null) {
-            throw new IllegalStateException(String.format("No service for %s has been registered.", serviceClass));
+            throw new IllegalStateException(String.format("No service for '%s' has been registered", serviceClass));
         }
         
         return service;
@@ -108,7 +108,7 @@ public class ServiceProviderImpl implements ServiceProvider, AutoCloseable {
             lock = (parent != null ? parent : this).lock;
         } else if (descriptor.getLifetime() == ServiceLifetime.SCOPED) {
             if (parent == null) {
-                throw new IllegalStateException(String.format("Cannot resolve %s from the root provider.", descriptor.serviceClass));
+                throw new IllegalStateException(String.format("Cannot resolve '%s' from the root provider", descriptor.serviceClass));
             }
             
             instances = this.instances;

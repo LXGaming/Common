@@ -70,7 +70,7 @@ public class ServiceDescriptor {
             var parameterClass = methodType.parameterType(index);
             var parameter = provider.getService(parameterClass);
             if (parameter == null) {
-                throw new IllegalStateException(String.format("Unable to resolve service for %s while attempting to activate %s.", parameterClass, implementationClass));
+                throw new IllegalStateException(String.format("Unable to resolve service for '%s' while attempting to activate '%s'", parameterClass, implementationClass));
             }
             
             parameters[index] = parameter;
