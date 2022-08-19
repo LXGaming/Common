@@ -23,7 +23,7 @@ import java.util.Collection;
 
 public interface ServiceProvider {
     
-    @NotNull ServiceContext createContext();
+    @NotNull ServiceScope createScope();
     
     <T> @NotNull T getRequiredService(@NotNull Class<T> serviceClass);
     

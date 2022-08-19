@@ -18,11 +18,11 @@ package io.github.lxgaming.common.inject;
 
 import org.jetbrains.annotations.NotNull;
 
-public class ServiceContext implements AutoCloseable {
+public class ServiceScope implements AutoCloseable {
     
     protected final ServiceProviderImpl serviceProvider;
     
-    protected ServiceContext(@NotNull ServiceProviderImpl serviceProvider) {
+    protected ServiceScope(@NotNull ServiceProviderImpl serviceProvider) {
         this.serviceProvider = serviceProvider;
     }
     

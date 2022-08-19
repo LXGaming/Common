@@ -51,8 +51,8 @@ public class ServiceProviderImpl implements ServiceProvider, AutoCloseable {
         this.lock = new ReentrantLock();
     }
     
-    public @NotNull ServiceContext createContext() {
-        return new ServiceContext(new ServiceProviderImpl(parent != null ? parent : this));
+    public @NotNull ServiceScope createScope() {
+        return new ServiceScope(new ServiceProviderImpl(parent != null ? parent : this));
     }
     
     public <T> @NotNull T getRequiredService(@NotNull Class<T> serviceClass) {
