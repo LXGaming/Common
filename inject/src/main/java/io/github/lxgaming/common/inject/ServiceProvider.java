@@ -25,7 +25,7 @@ public interface ServiceProvider {
     
     @NotNull ServiceScope createScope();
     
-    <T> @NotNull T getRequiredService(@NotNull Class<T> serviceClass);
+    <T> @NotNull T getRequiredService(@NotNull Class<T> serviceClass) throws IllegalStateException;
     
     <T> @Nullable T getService(@NotNull Class<T> serviceClass);
     

@@ -55,7 +55,7 @@ public class ServiceProviderImpl implements ServiceProvider, AutoCloseable {
         return new ServiceScope(new ServiceProviderImpl(parent != null ? parent : this));
     }
     
-    public <T> @NotNull T getRequiredService(@NotNull Class<T> serviceClass) {
+    public <T> @NotNull T getRequiredService(@NotNull Class<T> serviceClass) throws IllegalStateException {
         var service = getService(serviceClass);
         if (service == null) {
             throw new IllegalStateException(String.format("No service for %s has been registered.", serviceClass));
