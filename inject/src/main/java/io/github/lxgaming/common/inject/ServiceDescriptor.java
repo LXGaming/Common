@@ -63,17 +63,36 @@ public class ServiceDescriptor {
             return implementationFactory.apply(provider);
         }
         
+        if (lifetime == ServiceLifetime.SCOPED && provider.parent == null) {
+            throw new IllegalStateException(String.format("Cannot resolve '%s' from the root provider", serviceClass));
+        }
+        
         var methodHandle = getMethodHandle();
         var methodType = methodHandle.type();
         var parameters = new Object[methodType.parameterCount()];
         for (int index = 0; index < methodType.parameterCount(); index++) {
             var parameterClass = methodType.parameterType(index);
-            var parameter = provider.getService(parameterClass);
-            if (parameter == null) {
-                throw new IllegalStateException(String.format("Unable to resolve service for '%s' while attempting to activate '%s'", parameterClass, implementationClass));
+            if (parameterClass.isInstance(provider)) {
+                parameters[index] = provider;
+                continue;
             }
             
-            parameters[index] = parameter;
+            var parameterDescriptor = provider.getDescriptor(parameterClass);
+            if (parameterDescriptor == null) {
+                throw new IllegalStateException(String.format("Unable to resolve service for '%s' while attempting to activate '%s'", parameterClass, serviceClass));
+            }
+            
+            if (parameterDescriptor.getLifetime() == ServiceLifetime.SCOPED) {
+                if (getLifetime() == ServiceLifetime.SINGLETON) {
+                    throw new IllegalStateException(String.format("Cannot consume scoped service '%s' from singleton '%s'", parameterClass, serviceClass));
+                }
+                
+                if (provider.parent == null) {
+                    throw new IllegalStateException(String.format("Cannot resolve '%s' from root provider because it requires scoped service '%s'", serviceClass, parameterClass));
+                }
+            }
+            
+            parameters[index] = provider.getInstance(parameterDescriptor);
         }
         
         return methodHandle.invokeWithArguments(parameters);
