@@ -75,6 +75,32 @@ public class ServiceProviderImpl implements ServiceProvider, AutoCloseable {
             return null;
         }
         
+        return getInstance(descriptor);
+    }
+    
+    public <T> @NotNull Collection<T> getServices(@NotNull Class<T> serviceClass) {
+        var services = new ArrayList<T>();
+        for (var descriptor : descriptors) {
+            if (descriptor.getServiceClass() == serviceClass) {
+                services.add(getRequiredService(serviceClass));
+            }
+        }
+        
+        return services;
+    }
+    
+    protected @Nullable ServiceDescriptor getDescriptor(@NotNull Class<?> serviceClass) {
+        for (var descriptor : descriptors) {
+            if (descriptor.getServiceClass() == serviceClass) {
+                return descriptor;
+            }
+        }
+        
+        return null;
+    }
+    
+    @SuppressWarnings("unchecked")
+    protected <T> @NotNull T getInstance(@NotNull ServiceDescriptor descriptor) {
         Map<ServiceDescriptor, Object> instances;
         Lock lock;
         if (descriptor.getLifetime() == ServiceLifetime.SINGLETON) {
@@ -82,7 +108,7 @@ public class ServiceProviderImpl implements ServiceProvider, AutoCloseable {
             lock = (parent != null ? parent : this).lock;
         } else if (descriptor.getLifetime() == ServiceLifetime.SCOPED) {
             if (parent == null) {
-                throw new IllegalStateException(String.format("Cannot resolve %s from the root provider.", serviceClass));
+                throw new IllegalStateException(String.format("Cannot resolve %s from the root provider.", descriptor.serviceClass));
             }
             
             instances = this.instances;
@@ -132,27 +158,6 @@ public class ServiceProviderImpl implements ServiceProvider, AutoCloseable {
                 lock.unlock();
             }
         }
-    }
-    
-    public <T> @NotNull Collection<T> getServices(@NotNull Class<T> serviceClass) {
-        var services = new ArrayList<T>();
-        for (var descriptor : descriptors) {
-            if (descriptor.getServiceClass() == serviceClass) {
-                services.add(getRequiredService(serviceClass));
-            }
-        }
-        
-        return services;
-    }
-    
-    protected @Nullable ServiceDescriptor getDescriptor(@NotNull Class<?> serviceClass) {
-        for (var descriptor : descriptors) {
-            if (descriptor.getServiceClass() == serviceClass) {
-                return descriptor;
-            }
-        }
-        
-        return null;
     }
     
     @Override
