@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -77,8 +78,8 @@ public class ServiceProviderImpl implements ServiceProvider, AutoCloseable {
         return getInstance(descriptor);
     }
     
-    public <T> @NotNull Collection<T> getServices(@NotNull Class<T> serviceClass) {
-        Collection<T> services = new ArrayList<>();
+    public <T> @NotNull List<T> getServices(@NotNull Class<T> serviceClass) {
+        List<T> services = new ArrayList<>();
         for (ServiceDescriptor descriptor : descriptors) {
             if (descriptor.getServiceClass() == serviceClass) {
                 services.add(getRequiredService(serviceClass));

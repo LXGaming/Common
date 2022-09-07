@@ -1,6 +1,7 @@
 include "common"
 
 [
+    "hosting",
     "inject"
 ].each {
     include(it)

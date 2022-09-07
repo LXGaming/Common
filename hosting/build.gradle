@@ -1,0 +1,18 @@
+archivesBaseName = "common-hosting"
+
+dependencies {
+    api(project(path: ":common-inject"))
+    implementation("org.slf4j:slf4j-api:2.0.0")
+    testImplementation("org.slf4j:slf4j-simple:2.0.0")
+}
+
+publishing {
+    publications {
+        mavenPublication(MavenPublication) {
+            from components.java
+            pom {
+                description = "Hosting framework for Java"
+            }
+        }
+    }
+}
