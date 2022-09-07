@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Deque;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -33,7 +32,7 @@ public class ServiceProviderImpl implements ServiceProvider, AutoCloseable {
     
     protected final Collection<ServiceDescriptor> descriptors;
     protected final Map<ServiceDescriptor, Object> instances;
-    protected final List<AutoCloseable> closeables;
+    protected final Collection<AutoCloseable> closeables;
     protected final Deque<ServiceDescriptor> deque;
     protected final Lock lock;
     protected ServiceProviderImpl parent;
