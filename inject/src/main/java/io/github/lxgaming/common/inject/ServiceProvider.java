@@ -33,7 +33,7 @@ public interface ServiceProvider {
     /**
      * Get service of class {@code serviceClass} from the {@link ServiceProvider}.
      *
-     * @param <T> the class type
+     * @param <T>          the class type
      * @param serviceClass The service class
      * @return a service object of class {@code serviceClass}
      * @throws IllegalStateException if there is no service of class {@code serviceClass}
@@ -43,7 +43,7 @@ public interface ServiceProvider {
     /**
      * Get service of class {@code serviceClass} from the {@link ServiceProvider}.
      *
-     * @param <T> the class type
+     * @param <T>          the class type
      * @param serviceClass The service class
      * @return a service object of class {@code serviceClass} or null if there is no such service
      */
@@ -52,7 +52,7 @@ public interface ServiceProvider {
     /**
      * Get a collection of services of class {@code serviceClass} from the {@link ServiceProvider}.
      *
-     * @param <T> the class type
+     * @param <T>          the class type
      * @param serviceClass The service class
      * @return a collection of services of class {@code serviceClass}
      */
