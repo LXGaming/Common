@@ -1,11 +1,5 @@
 archivesBaseName = "common"
 
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(8)
-    }
-}
-
 publishing {
     publications {
         mavenPublication(MavenPublication) {

@@ -60,12 +60,12 @@ public class ServiceCollection {
      * @return this {@link ServiceCollection} for chaining
      */
     public @NotNull ServiceCollection addService(@NotNull Class<?> serviceClass) {
-        var service = serviceClass.getAnnotation(Service.class);
+        Service service = serviceClass.getAnnotation(Service.class);
         if (service == null) {
             throw new IllegalArgumentException("No service annotation found");
         }
         
-        var implementationClass = service.implementationClass() != Object.class
+        Class<?> implementationClass = service.implementationClass() != Object.class
                 ? service.implementationClass()
                 : serviceClass;
         

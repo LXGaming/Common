@@ -36,25 +36,25 @@ public class ServiceProviderTest {
     
     @BeforeAll
     void onStart() {
-        var classLoader = new ServiceClassLoader();
-        var services = new ServiceCollection();
+        ServiceClassLoader classLoader = new ServiceClassLoader();
+        ServiceCollection services = new ServiceCollection();
         
-        var lifetimes = ServiceLifetime.values();
-        var internalServices = new LinkedHashMap<ServiceLifetime, Class<?>>();
-        for (var lifetime : lifetimes) {
-            var name = lifetime.name();
-            var serviceClass = classLoader.defineServiceClass(name);
+        ServiceLifetime[] lifetimes = ServiceLifetime.values();
+        Map<ServiceLifetime, Class<?>> internalServices = new LinkedHashMap<ServiceLifetime, Class<?>>();
+        for (ServiceLifetime lifetime : lifetimes) {
+            String name = lifetime.name();
+            Class<?> serviceClass = classLoader.defineServiceClass(name);
             services.add(serviceClass, serviceClass, lifetime);
             internalServices.put(lifetime, serviceClass);
         }
         
-        for (var index = 0; index < lifetimes.length * lifetimes.length; index++) {
-            var lifetime = lifetimes[index / lifetimes.length];
-            var internalLifetime = lifetimes[index % lifetimes.length];
-            var internalService = internalServices.get(internalLifetime);
+        for (int index = 0; index < lifetimes.length * lifetimes.length; index++) {
+            ServiceLifetime lifetime = lifetimes[index / lifetimes.length];
+            ServiceLifetime internalLifetime = lifetimes[index % lifetimes.length];
+            Class<?> internalService = internalServices.get(internalLifetime);
             
-            var name = String.format("%s-%s", lifetime.name(), internalLifetime.name());
-            var serviceClass = classLoader.defineServiceClass(name, Type.getType(internalService));
+            String name = String.format("%s-%s", lifetime.name(), internalLifetime.name());
+            Class<?> serviceClass = classLoader.defineServiceClass(name, Type.getType(internalService));
             services.add(serviceClass, serviceClass, lifetime);
         }
         
@@ -69,7 +69,7 @@ public class ServiceProviderTest {
     
     @Test
     void validateRootProvider() {
-        for (var descriptor : provider.descriptors) {
+        for (ServiceDescriptor descriptor : provider.descriptors) {
             String name = descriptor.serviceClass.getSimpleName();
             if (name.contains(ServiceLifetime.SCOPED.name())) {
                 Assertions.assertThrows(IllegalStateException.class, () -> provider.getService(descriptor.serviceClass));
@@ -81,7 +81,7 @@ public class ServiceProviderTest {
     
     @Test
     void validateScopeProvider() throws Exception {
-        try (var scope = provider.createScope()) {
+        try (ServiceScope scope = provider.createScope()) {
             for (ServiceDescriptor descriptor : provider.descriptors) {
                 String name = descriptor.serviceClass.getSimpleName();
                 if (name.startsWith(ServiceLifetime.SINGLETON.name()) && name.contains(ServiceLifetime.SCOPED.name())) {
@@ -96,24 +96,24 @@ public class ServiceProviderTest {
     @Test
     @SuppressWarnings("unchecked")
     void validateServices() throws Exception {
-        var singletonServiceClass = (Class<? extends BaseService>) internalServices.get(ServiceLifetime.SINGLETON);
-        var scopedServiceClass = (Class<? extends BaseService>) internalServices.get(ServiceLifetime.SCOPED);
-        var transientServiceClass = (Class<? extends BaseService>) internalServices.get(ServiceLifetime.TRANSIENT);
+        Class<? extends BaseService> singletonServiceClass = (Class<? extends BaseService>) internalServices.get(ServiceLifetime.SINGLETON);
+        Class<? extends BaseService> scopedServiceClass = (Class<? extends BaseService>) internalServices.get(ServiceLifetime.SCOPED);
+        Class<? extends BaseService> transientServiceClass = (Class<? extends BaseService>) internalServices.get(ServiceLifetime.TRANSIENT);
         
-        var singletonService = provider.getRequiredService(singletonServiceClass);
-        var transientService = provider.getRequiredService(transientServiceClass);
+        BaseService singletonService = provider.getRequiredService(singletonServiceClass);
+        BaseService transientService = provider.getRequiredService(transientServiceClass);
         
         Assertions.assertEquals(singletonService.getId(), provider.getRequiredService(singletonServiceClass).getId());
         Assertions.assertNotEquals(transientService.getId(), provider.getRequiredService(transientServiceClass).getId());
         
-        try (var scope = provider.createScope()) {
-            var scopedService = scope.getServiceProvider().getRequiredService(scopedServiceClass);
+        try (ServiceScope scope = provider.createScope()) {
+            BaseService scopedService = scope.getServiceProvider().getRequiredService(scopedServiceClass);
             
             Assertions.assertEquals(singletonService.getId(), scope.getServiceProvider().getRequiredService(singletonServiceClass).getId());
             Assertions.assertEquals(scopedService.getId(), scope.getServiceProvider().getRequiredService(scopedServiceClass).getId());
             Assertions.assertNotEquals(transientService.getId(), scope.getServiceProvider().getRequiredService(transientServiceClass).getId());
             
-            try (var scope1 = scope.getServiceProvider().createScope()) {
+            try (ServiceScope scope1 = scope.getServiceProvider().createScope()) {
                 Assertions.assertEquals(singletonService.getId(), scope1.getServiceProvider().getRequiredService(singletonServiceClass).getId());
                 Assertions.assertNotEquals(scopedService.getId(), scope1.getServiceProvider().getRequiredService(scopedServiceClass).getId());
                 Assertions.assertNotEquals(transientService.getId(), scope1.getServiceProvider().getRequiredService(transientServiceClass).getId());

@@ -20,6 +20,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
+import java.lang.reflect.Constructor;
 import java.util.Objects;
 import java.util.function.Function;
 
@@ -67,17 +69,17 @@ public class ServiceDescriptor {
             throw new IllegalStateException(String.format("Cannot resolve '%s' from the root provider", serviceClass));
         }
         
-        var methodHandle = getMethodHandle();
-        var methodType = methodHandle.type();
-        var parameters = new Object[methodType.parameterCount()];
+        MethodHandle methodHandle = getMethodHandle();
+        MethodType methodType = methodHandle.type();
+        Object[] parameters = new Object[methodType.parameterCount()];
         for (int index = 0; index < methodType.parameterCount(); index++) {
-            var parameterClass = methodType.parameterType(index);
+            Class<?> parameterClass = methodType.parameterType(index);
             if (parameterClass.isInstance(provider)) {
                 parameters[index] = provider;
                 continue;
             }
             
-            var parameterDescriptor = provider.getDescriptor(parameterClass);
+            ServiceDescriptor parameterDescriptor = provider.getDescriptor(parameterClass);
             if (parameterDescriptor == null) {
                 throw new IllegalStateException(String.format("Unable to resolve service for '%s' while attempting to activate '%s'", parameterClass, serviceClass));
             }
@@ -102,7 +104,7 @@ public class ServiceDescriptor {
         if (methodHandle == null) {
             synchronized (this) {
                 if (methodHandle == null) {
-                    var constructors = implementationClass.getConstructors();
+                    Constructor<?>[] constructors = implementationClass.getConstructors();
                     methodHandle = LOOKUP.unreflectConstructor(constructors[0]);
                 }
             }
@@ -138,7 +140,7 @@ public class ServiceDescriptor {
             return false;
         }
         
-        var descriptor = (ServiceDescriptor) obj;
+        ServiceDescriptor descriptor = (ServiceDescriptor) obj;
         return Objects.equals(serviceClass, descriptor.serviceClass)
                 && Objects.equals(implementationClass, descriptor.implementationClass);
     }

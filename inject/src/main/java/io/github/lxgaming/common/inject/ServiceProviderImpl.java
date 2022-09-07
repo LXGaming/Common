@@ -55,7 +55,7 @@ public class ServiceProviderImpl implements ServiceProvider, AutoCloseable {
     }
     
     public <T> @NotNull T getRequiredService(@NotNull Class<T> serviceClass) throws IllegalStateException {
-        var service = getService(serviceClass);
+        T service = getService(serviceClass);
         if (service == null) {
             throw new IllegalStateException(String.format("No service for '%s' has been registered", serviceClass));
         }
@@ -69,7 +69,7 @@ public class ServiceProviderImpl implements ServiceProvider, AutoCloseable {
             return (T) this;
         }
         
-        var descriptor = getDescriptor(serviceClass);
+        ServiceDescriptor descriptor = getDescriptor(serviceClass);
         if (descriptor == null) {
             return null;
         }
@@ -78,8 +78,8 @@ public class ServiceProviderImpl implements ServiceProvider, AutoCloseable {
     }
     
     public <T> @NotNull Collection<T> getServices(@NotNull Class<T> serviceClass) {
-        var services = new ArrayList<T>();
-        for (var descriptor : descriptors) {
+        Collection<T> services = new ArrayList<>();
+        for (ServiceDescriptor descriptor : descriptors) {
             if (descriptor.getServiceClass() == serviceClass) {
                 services.add(getRequiredService(serviceClass));
             }
@@ -89,7 +89,7 @@ public class ServiceProviderImpl implements ServiceProvider, AutoCloseable {
     }
     
     protected @Nullable ServiceDescriptor getDescriptor(@NotNull Class<?> serviceClass) {
-        for (var descriptor : descriptors) {
+        for (ServiceDescriptor descriptor : descriptors) {
             if (descriptor.getServiceClass() == serviceClass) {
                 return descriptor;
             }
@@ -118,14 +118,14 @@ public class ServiceProviderImpl implements ServiceProvider, AutoCloseable {
         }
         
         if (instances != null && lock != null) {
-            var preInstance = instances.get(descriptor);
+            Object preInstance = instances.get(descriptor);
             if (preInstance != null) {
                 return (T) preInstance;
             }
             
             lock.lock();
             
-            var postInstance = instances.get(descriptor);
+            Object postInstance = instances.get(descriptor);
             if (postInstance != null) {
                 return (T) postInstance;
             }
@@ -162,7 +162,7 @@ public class ServiceProviderImpl implements ServiceProvider, AutoCloseable {
     @Override
     public void close() throws Exception {
         Exception ex = null;
-        for (var closeable : closeables) {
+        for (AutoCloseable closeable : closeables) {
             try {
                 closeable.close();
             } catch (Throwable t) {
