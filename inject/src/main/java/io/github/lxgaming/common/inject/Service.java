@@ -35,9 +35,9 @@ public @interface Service {
     @NotNull ServiceLifetime value();
     
     /**
-     * Implementation class for this service.
+     * Service class for this service.
      *
-     * @return the {@link Class implementationClass}
+     * @return the {@link Class serviceClass}
      */
-    @NotNull Class<?> implementationClass() default Object.class;
+    @NotNull Class<?> serviceClass() default Object.class;
 }

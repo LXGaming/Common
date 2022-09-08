@@ -53,21 +53,21 @@ public class ServiceCollection {
     //region Service
     
     /**
-     * Adds a service of the class specified in {@code serviceClass},
+     * Adds a service of the class specified in {@code implementationClass},
      * which must be annotated with {@link Service}.
      *
-     * @param serviceClass The service class
+     * @param implementationClass The implementation class
      * @return this {@link ServiceCollection} for chaining
      */
-    public @NotNull ServiceCollection addService(@NotNull Class<?> serviceClass) {
-        Service service = serviceClass.getAnnotation(Service.class);
+    public @NotNull ServiceCollection addService(@NotNull Class<?> implementationClass) {
+        Service service = implementationClass.getAnnotation(Service.class);
         if (service == null) {
             throw new IllegalArgumentException("No service annotation found");
         }
         
-        Class<?> implementationClass = service.implementationClass() != Object.class
-                ? service.implementationClass()
-                : serviceClass;
+        Class<?> serviceClass = service.serviceClass() != Object.class
+                ? service.serviceClass()
+                : implementationClass;
         
         return add(serviceClass, implementationClass, service.value());
     }
