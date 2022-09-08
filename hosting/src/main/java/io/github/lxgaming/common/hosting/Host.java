@@ -52,6 +52,11 @@ public interface Host extends AutoCloseable {
     void run() throws Exception;
     
     /**
+     * Registers the {@link ShutdownHook} to allow for a graceful shutdown of the host.
+     */
+    void addShutdownHook();
+    
+    /**
      * Blocks the calling thread until a shutdown is triggered.
      */
     @Blocking

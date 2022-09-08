@@ -21,6 +21,10 @@ public class ShutdownHook extends Thread {
     protected final HostEnvironment hostEnvironment;
     protected final Thread thread;
     
+    protected ShutdownHook(HostEnvironment hostEnvironment) {
+        this(hostEnvironment, Thread.currentThread());
+    }
+    
     protected ShutdownHook(HostEnvironment hostEnvironment, Thread thread) {
         super("Shutdown Thread");
         this.hostEnvironment = hostEnvironment;

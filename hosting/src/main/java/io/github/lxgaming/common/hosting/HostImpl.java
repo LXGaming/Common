@@ -89,7 +89,7 @@ public class HostImpl implements Host {
     @Override
     @Blocking
     public void run() throws Exception {
-        Runtime.getRuntime().addShutdownHook(new ShutdownHook(hostEnvironment, Thread.currentThread()));
+        addShutdownHook();
         
         try {
             start();
@@ -98,6 +98,11 @@ public class HostImpl implements Host {
         } finally {
             close();
         }
+    }
+    
+    @Override
+    public void addShutdownHook() {
+        Runtime.getRuntime().addShutdownHook(new ShutdownHook(hostEnvironment));
     }
     
     @Override
