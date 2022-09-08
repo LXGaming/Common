@@ -89,7 +89,16 @@ public class HostImpl implements Host {
     @Override
     @Blocking
     public void run() throws Exception {
-        addShutdownHook();
+        Thread thread = Thread.currentThread();
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            hostEnvironment.stop();
+            
+            try {
+                thread.join(hostEnvironment.getShutdownTimeout());
+            } catch (InterruptedException ex) {
+                // no-op
+            }
+        }, "Shutdown Thread"));
         
         try {
             start();
@@ -101,8 +110,22 @@ public class HostImpl implements Host {
     }
     
     @Override
-    public void addShutdownHook() {
-        Runtime.getRuntime().addShutdownHook(new ShutdownHook(hostEnvironment));
+    public void runAsync() {
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            try {
+                stop();
+            } catch (Exception ex) {
+                logger.error("Encountered an error while stopping the host", ex);
+            }
+            
+            try {
+                close();
+            } catch (Exception ex) {
+                logger.error("Encountered an error while closing the host", ex);
+            }
+        }, "Shutdown Thread"));
+        
+        start();
     }
     
     @Override
