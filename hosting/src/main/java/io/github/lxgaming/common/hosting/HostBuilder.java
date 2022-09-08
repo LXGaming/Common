@@ -16,7 +16,6 @@
 
 package io.github.lxgaming.common.hosting;
 
-import io.github.lxgaming.common.inject.ServiceCollection;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
@@ -41,8 +40,8 @@ public interface HostBuilder {
     /**
      * Configure the {@link Host} services.
      *
-     * @param consumer the {@link Consumer} for configuring the {@link ServiceCollection}
+     * @param consumer the {@link Consumer} for configuring the {@link HostServiceCollection}
      * @return this {@link HostBuilder} for chaining
      */
-    @NotNull HostBuilder configureServices(@NotNull Consumer<@NotNull ServiceCollection> consumer);
+    @NotNull HostBuilder configureServices(@NotNull Consumer<@NotNull HostServiceCollection> consumer);
 }

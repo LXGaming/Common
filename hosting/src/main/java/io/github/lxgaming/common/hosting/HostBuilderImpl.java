@@ -16,7 +16,6 @@
 
 package io.github.lxgaming.common.hosting;
 
-import io.github.lxgaming.common.inject.ServiceCollection;
 import io.github.lxgaming.common.inject.ServiceProviderImpl;
 import org.jetbrains.annotations.NotNull;
 
@@ -25,11 +24,11 @@ import java.util.function.Consumer;
 public class HostBuilderImpl implements HostBuilder {
     
     protected final HostEnvironmentImpl hostEnvironment;
-    protected final ServiceCollection serviceCollection;
+    protected final HostServiceCollection serviceCollection;
     
     public HostBuilderImpl() {
         hostEnvironment = new HostEnvironmentImpl();
-        serviceCollection = new ServiceCollection();
+        serviceCollection = new HostServiceCollection();
     }
     
     @Override
@@ -46,7 +45,7 @@ public class HostBuilderImpl implements HostBuilder {
     }
     
     @Override
-    public @NotNull HostBuilder configureServices(@NotNull Consumer<@NotNull ServiceCollection> consumer) {
+    public @NotNull HostBuilder configureServices(@NotNull Consumer<@NotNull HostServiceCollection> consumer) {
         consumer.accept(serviceCollection);
         return this;
     }
