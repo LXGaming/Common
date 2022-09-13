@@ -29,30 +29,34 @@ import java.util.List;
 public class HostEnvironmentImpl implements HostEnvironment {
     
     protected final Logger logger;
-    protected final List<Runnable> startingHooks;
-    protected final List<Runnable> startedHooks;
-    protected final List<Runnable> stoppingHooks;
-    protected final List<Runnable> stoppedHooks;
+    protected List<Runnable> startingHooks;
+    protected List<Runnable> startedHooks;
+    protected List<Runnable> stoppingHooks;
+    protected List<Runnable> stoppedHooks;
     protected String environmentName;
     protected Path contentRootPath;
     protected long shutdownTimeout;
     
     public HostEnvironmentImpl() {
         this.logger = LoggerFactory.getLogger(getClass());
-        this.startingHooks = new ArrayList<>();
-        this.startedHooks = new ArrayList<>();
-        this.stoppingHooks = new ArrayList<>();
-        this.stoppedHooks = new ArrayList<>();
         this.environmentName = "Development";
         this.contentRootPath = Paths.get(System.getProperty("user.dir", ".")).toAbsolutePath().normalize();
     }
     
     @Override
     public void addStartingHook(@NotNull Runnable runnable) {
+        if (startingHooks == null) {
+            this.startingHooks = new ArrayList<>();
+        }
+        
         startingHooks.add(runnable);
     }
     
     public void runStartingHooks() {
+        if (startingHooks == null) {
+            return;
+        }
+        
         for (Runnable runnable : startingHooks) {
             try {
                 runnable.run();
@@ -64,10 +68,18 @@ public class HostEnvironmentImpl implements HostEnvironment {
     
     @Override
     public void addStartedHook(@NotNull Runnable runnable) {
+        if (startedHooks == null) {
+            this.startedHooks = new ArrayList<>();
+        }
+        
         startedHooks.add(runnable);
     }
     
     public void runStartedHooks() {
+        if (startedHooks == null) {
+            return;
+        }
+        
         for (Runnable runnable : startedHooks) {
             try {
                 runnable.run();
@@ -79,10 +91,18 @@ public class HostEnvironmentImpl implements HostEnvironment {
     
     @Override
     public void addStoppingHook(@NotNull Runnable runnable) {
+        if (stoppingHooks == null) {
+            this.stoppingHooks = new ArrayList<>();
+        }
+        
         stoppingHooks.add(runnable);
     }
     
     public void runStoppingHooks() {
+        if (stoppingHooks == null) {
+            return;
+        }
+        
         for (Runnable runnable : stoppingHooks) {
             try {
                 runnable.run();
@@ -94,10 +114,18 @@ public class HostEnvironmentImpl implements HostEnvironment {
     
     @Override
     public void addStoppedHook(@NotNull Runnable runnable) {
+        if (stoppedHooks == null) {
+            this.stoppedHooks = new ArrayList<>();
+        }
+        
         stoppedHooks.add(runnable);
     }
     
     public void runStoppedHooks() {
+        if (stoppedHooks == null) {
+            return;
+        }
+        
         for (Runnable runnable : stoppedHooks) {
             try {
                 runnable.run();
