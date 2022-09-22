@@ -105,7 +105,7 @@ public class ServiceDescriptor {
             synchronized (this) {
                 if (methodHandle == null) {
                     Constructor<?>[] constructors = implementationClass.getConstructors();
-                    methodHandle = LOOKUP.unreflectConstructor(constructors[0]);
+                    this.methodHandle = LOOKUP.unreflectConstructor(constructors[0]);
                 }
             }
         }
