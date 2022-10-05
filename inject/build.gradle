@@ -1,7 +1,7 @@
 archivesBaseName = "common-inject"
 
 dependencies {
-    testImplementation("org.ow2.asm:asm:9.3")
+    testImplementation("org.ow2.asm:asm:9.4")
 }
 
 publishing {
