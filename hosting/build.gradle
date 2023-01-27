@@ -2,8 +2,8 @@ archivesBaseName = "common-hosting"
 
 dependencies {
     api(project(path: ":common-inject"))
-    api("org.slf4j:slf4j-api:2.0.3")
-    testImplementation("org.slf4j:slf4j-simple:2.0.3")
+    api("org.slf4j:slf4j-api:2.0.6")
+    testImplementation("org.slf4j:slf4j-simple:2.0.6")
 }
 
 publishing {
