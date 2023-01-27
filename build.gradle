@@ -9,12 +9,6 @@ subprojects {
 
     group = "io.github.lxgaming"
 
-    java {
-        toolchain {
-            languageVersion = JavaLanguageVersion.of(8)
-        }
-    }
-
     repositories {
         mavenCentral()
     }
@@ -25,12 +19,16 @@ subprojects {
     }
 
     java {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+
         withJavadocJar()
         withSourcesJar()
     }
 
     javadoc {
         failOnError = false
+        options.addStringOption("Xdoclint:none", "-quiet")
     }
 
     processResources {
