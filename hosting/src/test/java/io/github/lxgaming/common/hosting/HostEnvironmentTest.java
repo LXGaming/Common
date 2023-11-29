@@ -22,7 +22,7 @@ import org.junit.jupiter.api.TestInstance;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class HostEnvironmentTest {
-    
+
     @Test
     void validateEnvironment() {
         HostEnvironment environment = new HostEnvironmentImpl();
@@ -30,12 +30,12 @@ public class HostEnvironmentTest {
         Assertions.assertTrue(environment.isDevelopment());
         Assertions.assertFalse(environment.isProduction());
         Assertions.assertFalse(environment.isStaging());
-        
+
         environment.setEnvironmentName("Production");
         Assertions.assertFalse(environment.isDevelopment());
         Assertions.assertTrue(environment.isProduction());
         Assertions.assertFalse(environment.isStaging());
-        
+
         environment.setEnvironmentName("Staging");
         Assertions.assertFalse(environment.isDevelopment());
         Assertions.assertFalse(environment.isProduction());

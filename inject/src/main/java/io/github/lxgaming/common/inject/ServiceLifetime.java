@@ -20,17 +20,17 @@ package io.github.lxgaming.common.inject;
  * Specifies the lifetime of a service in an {@link ServiceCollection}.
  */
 public enum ServiceLifetime {
-    
+
     /**
      * Specifies that a single instance of the service will be created.
      */
     SINGLETON,
-    
+
     /**
      * Specifies that a new instance of the service will be created for each scope.
      */
     SCOPED,
-    
+
     /**
      * Specifies that a new instance of the service will be created every time it is requested.
      */

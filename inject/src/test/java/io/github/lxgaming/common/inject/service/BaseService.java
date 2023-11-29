@@ -19,17 +19,17 @@ package io.github.lxgaming.common.inject.service;
 import java.util.UUID;
 
 public abstract class BaseService {
-    
+
     private final UUID id;
-    
+
     public BaseService() {
         this.id = UUID.randomUUID();
     }
-    
+
     public UUID getId() {
         return id;
     }
-    
+
     @Override
     public String toString() {
         return getClass().getSimpleName() + ": " + getId();

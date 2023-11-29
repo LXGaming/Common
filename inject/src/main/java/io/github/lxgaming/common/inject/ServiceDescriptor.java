@@ -26,49 +26,49 @@ import java.util.Objects;
 import java.util.function.Function;
 
 public class ServiceDescriptor {
-    
+
     protected static final MethodHandles.Lookup LOOKUP = MethodHandles.lookup();
-    
+
     protected final Class<?> serviceClass;
     protected final Class<?> implementationClass;
     protected final ServiceLifetime lifetime;
     protected Function<ServiceProvider, Object> implementationFactory;
     protected Object implementationInstance;
     protected volatile MethodHandle methodHandle;
-    
+
     public ServiceDescriptor(@NotNull Class<?> serviceClass, @NotNull ServiceLifetime lifetime, @NotNull Function<ServiceProvider, Object> implementationFactory) {
         this(serviceClass, lifetime);
         this.implementationFactory = implementationFactory;
     }
-    
+
     public ServiceDescriptor(@NotNull Class<?> serviceClass, @NotNull Object implementationInstance) {
         this(serviceClass, implementationInstance.getClass(), ServiceLifetime.SINGLETON);
         this.implementationInstance = implementationInstance;
     }
-    
+
     public ServiceDescriptor(@NotNull Class<?> serviceClass, @NotNull ServiceLifetime lifetime) {
         this(serviceClass, serviceClass, lifetime);
     }
-    
+
     public ServiceDescriptor(@NotNull Class<?> serviceClass, @NotNull Class<?> implementationClass, @NotNull ServiceLifetime lifetime) {
         this.serviceClass = serviceClass;
         this.implementationClass = implementationClass;
         this.lifetime = lifetime;
     }
-    
+
     protected @NotNull Object createInstance(@NotNull ServiceProviderImpl provider) throws Throwable {
         if (implementationInstance != null) {
             return implementationInstance;
         }
-        
+
         if (implementationFactory != null) {
             return implementationFactory.apply(provider);
         }
-        
+
         if (lifetime == ServiceLifetime.SCOPED && provider.parent == null) {
             throw new IllegalStateException(String.format("Cannot resolve '%s' from the root provider", serviceClass));
         }
-        
+
         MethodHandle methodHandle = getMethodHandle();
         MethodType methodType = methodHandle.type();
         Object[] parameters = new Object[methodType.parameterCount()];
@@ -78,28 +78,28 @@ public class ServiceDescriptor {
                 parameters[index] = provider;
                 continue;
             }
-            
+
             ServiceDescriptor parameterDescriptor = provider.getDescriptor(parameterClass);
             if (parameterDescriptor == null) {
                 throw new IllegalStateException(String.format("Unable to resolve service for '%s' while attempting to activate '%s'", parameterClass, serviceClass));
             }
-            
+
             if (parameterDescriptor.getLifetime() == ServiceLifetime.SCOPED) {
                 if (getLifetime() == ServiceLifetime.SINGLETON) {
                     throw new IllegalStateException(String.format("Cannot consume scoped service '%s' from singleton '%s'", parameterClass, serviceClass));
                 }
-                
+
                 if (provider.parent == null) {
                     throw new IllegalStateException(String.format("Cannot resolve '%s' from root provider because it requires scoped service '%s'", serviceClass, parameterClass));
                 }
             }
-            
+
             parameters[index] = provider.getInstance(parameterDescriptor);
         }
-        
+
         return methodHandle.invokeWithArguments(parameters);
     }
-    
+
     protected @NotNull MethodHandle getMethodHandle() throws IllegalAccessException {
         if (methodHandle == null) {
             synchronized (this) {
@@ -109,42 +109,42 @@ public class ServiceDescriptor {
                 }
             }
         }
-        
+
         return methodHandle;
     }
-    
+
     public @NotNull Class<?> getServiceClass() {
         return serviceClass;
     }
-    
+
     public @NotNull Class<?> getImplementationClass() {
         return implementationClass;
     }
-    
+
     public @NotNull ServiceLifetime getLifetime() {
         return lifetime;
     }
-    
+
     @Override
     public int hashCode() {
         return Objects.hash(serviceClass, implementationClass);
     }
-    
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
             return true;
         }
-        
+
         if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-        
+
         ServiceDescriptor descriptor = (ServiceDescriptor) obj;
         return Objects.equals(serviceClass, descriptor.serviceClass)
                 && Objects.equals(implementationClass, descriptor.implementationClass);
     }
-    
+
     @Override
     public String toString() {
         return String.format("%s (%s)", serviceClass, implementationClass);

@@ -22,7 +22,7 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 
 public class ServiceClassLoader extends ClassLoader {
-    
+
     public Class<?> defineServiceClass(String name, Type... argumentTypes) {
         ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
         classWriter.visit(
@@ -57,7 +57,7 @@ public class ServiceClassLoader extends ClassLoader {
         methodVisitor.visitMaxs(-1, -1);
         methodVisitor.visitEnd();
         classWriter.visitEnd();
-        
+
         byte[] bytes = classWriter.toByteArray();
         return defineClass(null, bytes, 0, bytes.length);
     }

@@ -23,18 +23,18 @@ import org.jetbrains.annotations.NotNull;
  * any {@link ServiceLifetime#SCOPED} services that have been resolved from the {@link ServiceProvider} will be closed.
  */
 public class ServiceScope implements AutoCloseable {
-    
+
     protected final ServiceProviderImpl serviceProvider;
-    
+
     protected ServiceScope(@NotNull ServiceProviderImpl serviceProvider) {
         this.serviceProvider = serviceProvider;
     }
-    
+
     @Override
     public void close() throws Exception {
         serviceProvider.close();
     }
-    
+
     /**
      * The {@link ServiceProvider} used to resolve services from the scope.
      *

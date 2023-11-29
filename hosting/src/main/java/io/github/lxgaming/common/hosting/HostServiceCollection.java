@@ -26,7 +26,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.function.Function;
 
 public class HostServiceCollection extends ServiceCollection {
-    
+
     /**
      * Add an {@link HostedService} registration for the given type.
      *
@@ -38,7 +38,7 @@ public class HostServiceCollection extends ServiceCollection {
         return addSingleton(serviceClass, implementationClass)
                 .addSingleton(HostedService.class, serviceProvider -> serviceProvider.getRequiredService(serviceClass));
     }
-    
+
     /**
      * {@inheritDoc}
      *
@@ -51,29 +51,29 @@ public class HostServiceCollection extends ServiceCollection {
             if (service == null) {
                 return addSingleton(HostedService.class, implementationClass);
             }
-            
+
             if (service.value() == ServiceLifetime.SINGLETON) {
                 Class<?> serviceClass = service.serviceClass() != Object.class
                         ? service.serviceClass()
                         : implementationClass;
-                
+
                 return addHostedService(serviceClass, implementationClass);
             }
-            
+
             throw new IllegalArgumentException(String.format("%s cannot be %s", HostedService.class, service.value()));
         }
-        
+
         if (service != null) {
             Class<?> serviceClass = service.serviceClass() != Object.class
                     ? service.serviceClass()
                     : implementationClass;
-            
+
             return add(serviceClass, implementationClass, service.value());
         }
-        
+
         throw new IllegalArgumentException("No service annotation found");
     }
-    
+
     /**
      * {@inheritDoc}
      *
@@ -83,7 +83,7 @@ public class HostServiceCollection extends ServiceCollection {
     public @NotNull HostServiceCollection addSingleton(@NotNull Class<?> serviceClass) {
         return (HostServiceCollection) super.addSingleton(serviceClass);
     }
-    
+
     /**
      * {@inheritDoc}
      *
@@ -93,7 +93,7 @@ public class HostServiceCollection extends ServiceCollection {
     public @NotNull HostServiceCollection addSingleton(@NotNull Class<?> serviceClass, @NotNull Class<?> implementationClass) {
         return (HostServiceCollection) super.addSingleton(serviceClass, implementationClass);
     }
-    
+
     /**
      * {@inheritDoc}
      *
@@ -103,7 +103,7 @@ public class HostServiceCollection extends ServiceCollection {
     public @NotNull HostServiceCollection addSingleton(@NotNull Object implementationInstance) {
         return (HostServiceCollection) super.addSingleton(implementationInstance);
     }
-    
+
     /**
      * {@inheritDoc}
      *
@@ -113,7 +113,7 @@ public class HostServiceCollection extends ServiceCollection {
     public @NotNull HostServiceCollection addSingleton(@NotNull Class<?> serviceClass, @NotNull Object implementationInstance) {
         return (HostServiceCollection) super.addSingleton(serviceClass, implementationInstance);
     }
-    
+
     /**
      * {@inheritDoc}
      *
@@ -123,7 +123,7 @@ public class HostServiceCollection extends ServiceCollection {
     public @NotNull HostServiceCollection addSingleton(@NotNull Class<?> serviceClass, @NotNull Function<ServiceProvider, Object> implementationFactory) {
         return (HostServiceCollection) super.addSingleton(serviceClass, implementationFactory);
     }
-    
+
     /**
      * {@inheritDoc}
      *
@@ -133,7 +133,7 @@ public class HostServiceCollection extends ServiceCollection {
     public @NotNull HostServiceCollection addScoped(@NotNull Class<?> serviceClass) {
         return (HostServiceCollection) super.addScoped(serviceClass);
     }
-    
+
     /**
      * {@inheritDoc}
      *
@@ -143,7 +143,7 @@ public class HostServiceCollection extends ServiceCollection {
     public @NotNull HostServiceCollection addScoped(@NotNull Class<?> serviceClass, @NotNull Class<?> implementationClass) {
         return (HostServiceCollection) super.addScoped(serviceClass, implementationClass);
     }
-    
+
     /**
      * {@inheritDoc}
      *
@@ -153,7 +153,7 @@ public class HostServiceCollection extends ServiceCollection {
     public @NotNull HostServiceCollection addScoped(@NotNull Class<?> serviceClass, @NotNull Function<ServiceProvider, Object> implementationFactory) {
         return (HostServiceCollection) super.addScoped(serviceClass, implementationFactory);
     }
-    
+
     /**
      * {@inheritDoc}
      *
@@ -163,7 +163,7 @@ public class HostServiceCollection extends ServiceCollection {
     public @NotNull HostServiceCollection addTransient(@NotNull Class<?> serviceClass) {
         return (HostServiceCollection) super.addTransient(serviceClass);
     }
-    
+
     /**
      * {@inheritDoc}
      *
@@ -173,7 +173,7 @@ public class HostServiceCollection extends ServiceCollection {
     public @NotNull HostServiceCollection addTransient(@NotNull Class<?> serviceClass, @NotNull Class<?> implementationClass) {
         return (HostServiceCollection) super.addTransient(serviceClass, implementationClass);
     }
-    
+
     /**
      * {@inheritDoc}
      *
@@ -183,22 +183,22 @@ public class HostServiceCollection extends ServiceCollection {
     public @NotNull HostServiceCollection addTransient(@NotNull Class<?> serviceClass, @NotNull Function<ServiceProvider, Object> implementationFactory) {
         return (HostServiceCollection) super.addTransient(serviceClass, implementationFactory);
     }
-    
+
     @Override
     protected @NotNull HostServiceCollection add(@NotNull Class<?> serviceClass, @NotNull ServiceLifetime lifetime, @NotNull Function<ServiceProvider, Object> implementationFactory) {
         return (HostServiceCollection) super.add(serviceClass, lifetime, implementationFactory);
     }
-    
+
     @Override
     protected @NotNull HostServiceCollection add(@NotNull Class<?> serviceClass, @NotNull Object implementationInstance) {
         return (HostServiceCollection) super.add(serviceClass, implementationInstance);
     }
-    
+
     @Override
     protected @NotNull HostServiceCollection add(@NotNull Class<?> serviceClass, @NotNull Class<?> implementationClass, @NotNull ServiceLifetime lifetime) {
         return (HostServiceCollection) super.add(serviceClass, implementationClass, lifetime);
     }
-    
+
     @Override
     protected @NotNull HostServiceCollection add(@NotNull ServiceDescriptor descriptor) {
         return (HostServiceCollection) super.add(descriptor);

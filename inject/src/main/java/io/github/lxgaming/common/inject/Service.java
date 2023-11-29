@@ -26,14 +26,14 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface Service {
-    
+
     /**
      * Lifetime for this service.
      *
      * @return the {@link ServiceLifetime}
      */
     @NotNull ServiceLifetime value();
-    
+
     /**
      * Service class for this service.
      *

@@ -17,12 +17,12 @@
 package io.github.lxgaming.common.hosting;
 
 public interface HostedService {
-    
+
     /**
      * Triggered when the host is ready to start the service.
      */
     void start();
-    
+
     /**
      * Triggered when the host is performing a graceful shutdown.
      */

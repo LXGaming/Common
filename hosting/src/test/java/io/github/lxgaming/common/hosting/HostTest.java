@@ -24,19 +24,19 @@ import org.slf4j.LoggerFactory;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class HostTest {
-    
+
     @BeforeAll
     void onStart() {
         System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "trace");
     }
-    
+
     @Test
     void validateHost() throws Exception {
         Logger logger = LoggerFactory.getLogger(getClass());
         Host host = null;
         try {
             HostBuilder builder = Host.createBuilder();
-            
+
             builder.configureEnvironment(environment -> {
                 environment.setEnvironmentName("Production");
                 environment.addStartingHook(() -> logger.info("Starting Hook"));
@@ -44,10 +44,10 @@ public class HostTest {
                 environment.addStoppingHook(() -> logger.info("Stopping Hook"));
                 environment.addStoppedHook(() -> logger.info("Stopped Hook"));
             });
-            
+
             builder.configureServices(services -> {
             });
-            
+
             host = builder.build();
             host.start();
             host.stop();

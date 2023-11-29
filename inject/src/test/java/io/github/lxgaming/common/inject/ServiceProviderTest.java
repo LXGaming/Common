@@ -30,15 +30,15 @@ import java.util.Map;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class ServiceProviderTest {
-    
+
     Map<ServiceLifetime, Class<?>> internalServices;
     ServiceProviderImpl provider;
-    
+
     @BeforeAll
     void onStart() {
         ServiceClassLoader classLoader = new ServiceClassLoader();
         ServiceCollection services = new ServiceCollection();
-        
+
         ServiceLifetime[] lifetimes = ServiceLifetime.values();
         Map<ServiceLifetime, Class<?>> internalServices = new LinkedHashMap<ServiceLifetime, Class<?>>();
         for (ServiceLifetime lifetime : lifetimes) {
@@ -47,26 +47,26 @@ public class ServiceProviderTest {
             services.add(serviceClass, serviceClass, lifetime);
             internalServices.put(lifetime, serviceClass);
         }
-        
+
         for (int index = 0; index < lifetimes.length * lifetimes.length; index++) {
             ServiceLifetime lifetime = lifetimes[index / lifetimes.length];
             ServiceLifetime internalLifetime = lifetimes[index % lifetimes.length];
             Class<?> internalService = internalServices.get(internalLifetime);
-            
+
             String name = String.format("%s-%s", lifetime.name(), internalLifetime.name());
             Class<?> serviceClass = classLoader.defineServiceClass(name, Type.getType(internalService));
             services.add(serviceClass, serviceClass, lifetime);
         }
-        
+
         this.internalServices = internalServices;
         this.provider = services.buildServiceProvider();
     }
-    
+
     @AfterAll
     void onStop() {
         Assertions.assertDoesNotThrow(provider::close);
     }
-    
+
     @Test
     void validateRootProvider() {
         for (ServiceDescriptor descriptor : provider.descriptors) {
@@ -78,7 +78,7 @@ public class ServiceProviderTest {
             }
         }
     }
-    
+
     @Test
     void validateScopeProvider() throws Exception {
         try (ServiceScope scope = provider.createScope()) {
@@ -92,38 +92,38 @@ public class ServiceProviderTest {
             }
         }
     }
-    
+
     @Test
     @SuppressWarnings("unchecked")
     void validateServices() throws Exception {
         Class<? extends BaseService> singletonServiceClass = (Class<? extends BaseService>) internalServices.get(ServiceLifetime.SINGLETON);
         Class<? extends BaseService> scopedServiceClass = (Class<? extends BaseService>) internalServices.get(ServiceLifetime.SCOPED);
         Class<? extends BaseService> transientServiceClass = (Class<? extends BaseService>) internalServices.get(ServiceLifetime.TRANSIENT);
-        
+
         BaseService singletonService = provider.getRequiredService(singletonServiceClass);
         BaseService transientService = provider.getRequiredService(transientServiceClass);
-        
+
         Assertions.assertEquals(singletonService.getId(), provider.getRequiredService(singletonServiceClass).getId());
         Assertions.assertNotEquals(transientService.getId(), provider.getRequiredService(transientServiceClass).getId());
-        
+
         try (ServiceScope scope = provider.createScope()) {
             BaseService scopedService = scope.getServiceProvider().getRequiredService(scopedServiceClass);
-            
+
             Assertions.assertEquals(singletonService.getId(), scope.getServiceProvider().getRequiredService(singletonServiceClass).getId());
             Assertions.assertEquals(scopedService.getId(), scope.getServiceProvider().getRequiredService(scopedServiceClass).getId());
             Assertions.assertNotEquals(transientService.getId(), scope.getServiceProvider().getRequiredService(transientServiceClass).getId());
-            
+
             try (ServiceScope scope1 = scope.getServiceProvider().createScope()) {
                 Assertions.assertEquals(singletonService.getId(), scope1.getServiceProvider().getRequiredService(singletonServiceClass).getId());
                 Assertions.assertNotEquals(scopedService.getId(), scope1.getServiceProvider().getRequiredService(scopedServiceClass).getId());
                 Assertions.assertNotEquals(transientService.getId(), scope1.getServiceProvider().getRequiredService(transientServiceClass).getId());
             }
-            
+
             Assertions.assertEquals(singletonService.getId(), scope.getServiceProvider().getRequiredService(singletonServiceClass).getId());
             Assertions.assertEquals(scopedService.getId(), scope.getServiceProvider().getRequiredService(scopedServiceClass).getId());
             Assertions.assertNotEquals(transientService.getId(), scope.getServiceProvider().getRequiredService(transientServiceClass).getId());
         }
-        
+
         Assertions.assertEquals(singletonService.getId(), provider.getRequiredService(singletonServiceClass).getId());
         Assertions.assertNotEquals(transientService.getId(), provider.getRequiredService(transientServiceClass).getId());
     }

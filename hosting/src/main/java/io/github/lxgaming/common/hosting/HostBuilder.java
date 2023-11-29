@@ -21,14 +21,14 @@ import org.jetbrains.annotations.NotNull;
 import java.util.function.Consumer;
 
 public interface HostBuilder {
-    
+
     /**
      * Creates a new {@link Host}.
      *
      * @return the default {@link Host} implementation
      */
     @NotNull Host build();
-    
+
     /**
      * Configure the {@link Host} environment.
      *
@@ -36,7 +36,7 @@ public interface HostBuilder {
      * @return this {@link HostBuilder} for chaining
      */
     @NotNull HostBuilder configureEnvironment(@NotNull Consumer<@NotNull HostEnvironment> consumer);
-    
+
     /**
      * Configure the {@link Host} services.
      *

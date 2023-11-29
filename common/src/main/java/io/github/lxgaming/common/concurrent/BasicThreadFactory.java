@@ -23,65 +23,65 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class BasicThreadFactory implements ThreadFactory {
-    
+
     private final AtomicLong counter;
     private final Boolean daemon;
     private final String format;
     private final Integer priority;
-    
+
     private BasicThreadFactory(@Nullable Boolean daemon, @Nullable String format, @Nullable Integer priority) {
         this.counter = new AtomicLong();
         this.daemon = daemon;
         this.format = format;
         this.priority = priority;
     }
-    
+
     public static @NotNull Builder builder() {
         return new Builder();
     }
-    
+
     @Override
     public @Nullable Thread newThread(@NotNull Runnable r) {
         Thread thread = new Thread(r);
-        
+
         if (daemon != null) {
             thread.setDaemon(daemon);
         }
-        
+
         if (format != null) {
             thread.setName(String.format(format, counter.incrementAndGet()));
         }
-        
+
         if (priority != null) {
             thread.setPriority(priority);
         }
-        
+
         return thread;
     }
-    
+
     public static final class Builder {
-        
+
         private Boolean daemon;
         private String format;
         private Integer priority;
-        
+
         private Builder() {
         }
-        
+
         public @NotNull BasicThreadFactory build() {
             return new BasicThreadFactory(daemon, format, priority);
         }
-        
+
         public @NotNull Builder daemon(boolean daemon) {
             this.daemon = daemon;
             return this;
         }
-        
+
         public @NotNull Builder format(@Nullable String format) {
             this.format = format;
             return this;
         }
-        
+
         public @NotNull Builder priority(int priority) {
             this.priority = priority;
             return this;

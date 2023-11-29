@@ -25,17 +25,17 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 public abstract class Task implements Runnable {
-    
+
     private long delay;
     private long interval;
     private Type type;
     private volatile Exception exception;
     private volatile ScheduledFuture<?> scheduledFuture;
-    
+
     public abstract boolean prepare();
-    
+
     public abstract void execute() throws Exception;
-    
+
     @Override
     public final void run() {
         try {
@@ -45,46 +45,46 @@ public abstract class Task implements Runnable {
             getScheduledFuture().cancel(false);
         }
     }
-    
+
     public boolean await() {
         try {
             if (getScheduledFuture() == null) {
                 return false;
             }
-            
+
             getScheduledFuture().get();
             return getException() == null;
         } catch (Exception ex) {
             if (getException() != null) {
                 ex.addSuppressed(getException());
             }
-            
+
             exception(ex);
             return false;
         }
     }
-    
+
     public boolean await(long timeout, @NotNull TimeUnit unit) {
         try {
             if (getScheduledFuture() == null) {
                 return false;
             }
-            
+
             getScheduledFuture().get(timeout, unit);
             return getException() == null;
         } catch (Exception ex) {
             if (getException() != null) {
                 ex.addSuppressed(getException());
             }
-            
+
             exception(ex);
             return false;
         }
     }
-    
+
     public final void schedule(@NotNull ScheduledExecutorService scheduledExecutorService) throws Exception {
         Preconditions.checkNotNull(type, "type");
-        
+
         exception(null);
         if (type == Type.DEFAULT) {
             scheduledFuture(scheduledExecutorService.schedule(this, delay, TimeUnit.MILLISECONDS));
@@ -94,63 +94,63 @@ public abstract class Task implements Runnable {
             scheduledFuture(scheduledExecutorService.scheduleAtFixedRate(this, delay, interval, TimeUnit.MILLISECONDS));
         }
     }
-    
+
     public final long getDelay() {
         return delay;
     }
-    
+
     protected final void delay(long delay, @NotNull TimeUnit unit) {
         this.delay = unit.toMillis(delay);
     }
-    
+
     public final long getInterval() {
         return interval;
     }
-    
+
     protected final void interval(long interval, @NotNull TimeUnit unit) {
         this.interval = unit.toMillis(interval);
     }
-    
+
     public final @Nullable Type getType() {
         return type;
     }
-    
+
     protected final void type(@NotNull Type type) {
         this.type = type;
     }
-    
+
     public final @Nullable Exception getException() {
         return exception;
     }
-    
+
     protected final void exception(@Nullable Exception exception) {
         this.exception = exception;
     }
-    
+
     public final @Nullable ScheduledFuture<?> getScheduledFuture() {
         return scheduledFuture;
     }
-    
+
     protected final void scheduledFuture(@NotNull ScheduledFuture<?> scheduledFuture) {
         this.scheduledFuture = scheduledFuture;
     }
-    
+
     public enum Type {
-        
+
         DEFAULT("Default"),
         FIXED_DELAY("Fixed Delay"),
         FIXED_RATE("Fixed Rate");
-        
+
         private final String name;
-        
+
         Type(@NotNull String name) {
             this.name = name;
         }
-        
+
         public @NotNull String getName() {
             return name;
         }
-        
+
         @Override
         public String toString() {
             return name().toLowerCase();

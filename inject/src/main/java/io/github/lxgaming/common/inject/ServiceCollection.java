@@ -23,24 +23,24 @@ import java.util.LinkedHashSet;
 import java.util.function.Function;
 
 public class ServiceCollection {
-    
+
     protected final Collection<ServiceDescriptor> descriptors;
-    
+
     public ServiceCollection() {
         this(new LinkedHashSet<>());
     }
-    
+
     protected ServiceCollection(Collection<ServiceDescriptor> descriptors) {
         this.descriptors = descriptors;
     }
-    
+
     /**
      * Clears the services from this {@link ServiceCollection}.
      */
     public void clear() {
         descriptors.clear();
     }
-    
+
     /**
      * Creates a {@link ServiceProvider} containing the services from this {@link ServiceCollection}.
      *
@@ -49,9 +49,9 @@ public class ServiceCollection {
     public @NotNull ServiceProviderImpl buildServiceProvider() {
         return new ServiceProviderImpl(new LinkedHashSet<>(descriptors));
     }
-    
+
     //region Service
-    
+
     /**
      * Adds a service of the class specified in {@code implementationClass},
      * which must be annotated with {@link Service}.
@@ -64,17 +64,17 @@ public class ServiceCollection {
         if (service == null) {
             throw new IllegalArgumentException("No service annotation found");
         }
-        
+
         Class<?> serviceClass = service.serviceClass() != Object.class
                 ? service.serviceClass()
                 : implementationClass;
-        
+
         return add(serviceClass, implementationClass, service.value());
     }
     //endregion
-    
+
     //region Singleton
-    
+
     /**
      * Adds a singleton service of the class specified in {@code serviceClass}.
      *
@@ -85,7 +85,7 @@ public class ServiceCollection {
     public @NotNull ServiceCollection addSingleton(@NotNull Class<?> serviceClass) {
         return addSingleton(serviceClass, serviceClass);
     }
-    
+
     /**
      * Adds a scoped service of the class specified in {@code serviceClass} with an
      * implementation of the class specified in {@code implementationClass}.
@@ -98,7 +98,7 @@ public class ServiceCollection {
     public @NotNull ServiceCollection addSingleton(@NotNull Class<?> serviceClass, @NotNull Class<?> implementationClass) {
         return add(serviceClass, implementationClass, ServiceLifetime.SINGLETON);
     }
-    
+
     /**
      * Adds a singleton service of the instance specified in {@code implementationInstance}.
      *
@@ -109,7 +109,7 @@ public class ServiceCollection {
     public @NotNull ServiceCollection addSingleton(@NotNull Object implementationInstance) {
         return addSingleton(implementationInstance.getClass(), implementationInstance);
     }
-    
+
     /**
      * Adds a singleton service of the class specified in {@code serviceClass} with an
      * instance specified in {@code implementationInstance}.
@@ -122,7 +122,7 @@ public class ServiceCollection {
     public @NotNull ServiceCollection addSingleton(@NotNull Class<?> serviceClass, @NotNull Object implementationInstance) {
         return add(serviceClass, implementationInstance);
     }
-    
+
     /**
      * Adds a singleton service of the class specified in {@code serviceClass} with a
      * factory specified in {@code implementationFactory}.
@@ -136,9 +136,9 @@ public class ServiceCollection {
         return add(serviceClass, ServiceLifetime.SINGLETON, implementationFactory);
     }
     //endregion
-    
+
     //region Scoped
-    
+
     /**
      * Adds a scoped service of the class specified in {@code serviceClass}.
      *
@@ -149,7 +149,7 @@ public class ServiceCollection {
     public @NotNull ServiceCollection addScoped(@NotNull Class<?> serviceClass) {
         return addScoped(serviceClass, serviceClass);
     }
-    
+
     /**
      * Adds a scoped service of the class specified in {@code serviceClass} with an
      * implementation of the class specified in {@code implementationClass}.
@@ -162,7 +162,7 @@ public class ServiceCollection {
     public @NotNull ServiceCollection addScoped(@NotNull Class<?> serviceClass, @NotNull Class<?> implementationClass) {
         return add(serviceClass, implementationClass, ServiceLifetime.SCOPED);
     }
-    
+
     /**
      * Adds a scoped service of the class specified in {@code serviceClass} with a
      * factory specified in {@code implementationFactory}.
@@ -176,9 +176,9 @@ public class ServiceCollection {
         return add(serviceClass, ServiceLifetime.SCOPED, implementationFactory);
     }
     //endregion
-    
+
     //region Transient
-    
+
     /**
      * Adds a transient service of the class specified in {@code serviceClass}.
      *
@@ -189,7 +189,7 @@ public class ServiceCollection {
     public @NotNull ServiceCollection addTransient(@NotNull Class<?> serviceClass) {
         return addTransient(serviceClass, serviceClass);
     }
-    
+
     /**
      * Adds a transient service of the class specified in {@code serviceClass} with an
      * implementation of the class specified in {@code implementationClass}.
@@ -202,7 +202,7 @@ public class ServiceCollection {
     public @NotNull ServiceCollection addTransient(@NotNull Class<?> serviceClass, @NotNull Class<?> implementationClass) {
         return add(serviceClass, implementationClass, ServiceLifetime.TRANSIENT);
     }
-    
+
     /**
      * Adds a transient service of the class specified in {@code serviceClass} with a
      * factory specified in {@code implementationFactory}.
@@ -216,24 +216,24 @@ public class ServiceCollection {
         return add(serviceClass, ServiceLifetime.TRANSIENT, implementationFactory);
     }
     //endregion
-    
+
     protected @NotNull ServiceCollection add(@NotNull Class<?> serviceClass, @NotNull ServiceLifetime lifetime, @NotNull Function<ServiceProvider, Object> implementationFactory) {
         return add(new ServiceDescriptor(serviceClass, lifetime, implementationFactory));
     }
-    
+
     protected @NotNull ServiceCollection add(@NotNull Class<?> serviceClass, @NotNull Object implementationInstance) {
         return add(new ServiceDescriptor(serviceClass, implementationInstance));
     }
-    
+
     protected @NotNull ServiceCollection add(@NotNull Class<?> serviceClass, @NotNull Class<?> implementationClass, @NotNull ServiceLifetime lifetime) {
         return add(new ServiceDescriptor(serviceClass, implementationClass, lifetime));
     }
-    
+
     protected @NotNull ServiceCollection add(@NotNull ServiceDescriptor descriptor) {
         if (descriptors.contains(descriptor)) {
             throw new IllegalArgumentException(String.format("%s is already registered", descriptor));
         }
-        
+
         descriptors.add(descriptor);
         return this;
     }

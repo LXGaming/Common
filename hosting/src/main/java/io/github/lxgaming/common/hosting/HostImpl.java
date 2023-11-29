@@ -27,42 +27,42 @@ import java.util.Collections;
 import java.util.List;
 
 public class HostImpl implements Host {
-    
+
     protected final HostEnvironmentImpl hostEnvironment;
     protected final ServiceProviderImpl serviceProvider;
     protected final Logger logger;
-    
+
     protected HostImpl(@NotNull HostEnvironmentImpl hostEnvironment, @NotNull ServiceProviderImpl serviceProvider) {
         this.hostEnvironment = hostEnvironment;
         this.serviceProvider = serviceProvider;
         this.logger = LoggerFactory.getLogger(getClass());
     }
-    
+
     @Override
     public void start() {
         logger.debug("Hosting starting");
-        
+
         hostEnvironment.runStartingHooks();
-        
+
         List<HostedService> hostedServices = serviceProvider.getServices(HostedService.class);
         for (HostedService hostedService : hostedServices) {
             hostedService.start();
         }
-        
+
         hostEnvironment.runStartedHooks();
-        
+
         logger.debug("Hosting started");
     }
-    
+
     @Override
     public void stop() throws Exception {
         logger.debug("Hosting stopping");
-        
+
         hostEnvironment.runStoppingHooks();
-        
+
         List<HostedService> hostedServices = serviceProvider.getServices(HostedService.class);
         hostedServices.sort(Collections.reverseOrder());
-        
+
         Exception ex = null;
         for (HostedService hostedService : hostedServices) {
             try {
@@ -71,35 +71,35 @@ public class HostImpl implements Host {
                 if (ex == null) {
                     ex = new Exception("Encountered an error while stopping hosted services");
                 }
-                
+
                 ex.addSuppressed(t);
             }
         }
-        
+
         hostEnvironment.runStoppedHooks();
-        
+
         if (ex != null) {
             logger.debug("Hosting shutdown exception", ex);
             throw ex;
         }
-        
+
         logger.debug("Hosting stopped");
     }
-    
+
     @Override
     @Blocking
     public void run() throws Exception {
         Thread thread = Thread.currentThread();
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             hostEnvironment.stop();
-            
+
             try {
                 thread.join(hostEnvironment.getShutdownTimeout());
             } catch (InterruptedException ex) {
                 // no-op
             }
         }, "Shutdown Thread"));
-        
+
         try {
             start();
             waitForShutdown();
@@ -108,7 +108,7 @@ public class HostImpl implements Host {
             close();
         }
     }
-    
+
     @Override
     public void runAsync() {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
@@ -117,17 +117,17 @@ public class HostImpl implements Host {
             } catch (Exception ex) {
                 logger.error("Encountered an error while stopping the host", ex);
             }
-            
+
             try {
                 close();
             } catch (Exception ex) {
                 logger.error("Encountered an error while closing the host", ex);
             }
         }, "Shutdown Thread"));
-        
+
         start();
     }
-    
+
     @Override
     @Blocking
     public void waitForShutdown() {
@@ -139,12 +139,12 @@ public class HostImpl implements Host {
             // no-op
         }
     }
-    
+
     @Override
     public @NotNull ServiceProvider getServiceProvider() {
         return serviceProvider;
     }
-    
+
     @Override
     public void close() throws Exception {
         serviceProvider.close();

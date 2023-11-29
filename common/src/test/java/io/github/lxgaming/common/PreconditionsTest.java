@@ -20,36 +20,36 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 public class PreconditionsTest {
-    
+
     @Test
     public void testCheckArgument() {
         Assertions.assertThrows(IllegalArgumentException.class, () -> Preconditions.checkArgument(false));
         Assertions.assertThrows(IllegalArgumentException.class, () -> Preconditions.checkArgument(false, false));
         Assertions.assertThrows(IllegalArgumentException.class, () -> Preconditions.checkArgument(false, "%s", false));
-        
+
         Assertions.assertDoesNotThrow(() -> Preconditions.checkArgument(true));
         Assertions.assertDoesNotThrow(() -> Preconditions.checkArgument(true, true));
         Assertions.assertDoesNotThrow(() -> Preconditions.checkArgument(true, "&s", true));
     }
-    
+
     @SuppressWarnings("ObviousNullCheck")
     @Test
     public void testCheckNotNull() {
         Assertions.assertThrows(NullPointerException.class, () -> Preconditions.checkNotNull(null));
         Assertions.assertThrows(NullPointerException.class, () -> Preconditions.checkNotNull(null, null));
         Assertions.assertThrows(NullPointerException.class, () -> Preconditions.checkNotNull(null, "%s", (Object) null));
-        
+
         Assertions.assertDoesNotThrow(() -> Preconditions.checkNotNull(""));
         Assertions.assertDoesNotThrow(() -> Preconditions.checkNotNull("", null));
         Assertions.assertDoesNotThrow(() -> Preconditions.checkNotNull("", "&s", (Object) null));
     }
-    
+
     @Test
     public void testCheckState() {
         Assertions.assertThrows(IllegalStateException.class, () -> Preconditions.checkState(false));
         Assertions.assertThrows(IllegalStateException.class, () -> Preconditions.checkState(false, false));
         Assertions.assertThrows(IllegalStateException.class, () -> Preconditions.checkState(false, "%s", false));
-        
+
         Assertions.assertDoesNotThrow(() -> Preconditions.checkState(true));
         Assertions.assertDoesNotThrow(() -> Preconditions.checkState(true, true));
         Assertions.assertDoesNotThrow(() -> Preconditions.checkState(true, "&s", true));

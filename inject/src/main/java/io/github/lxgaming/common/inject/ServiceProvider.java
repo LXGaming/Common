@@ -22,14 +22,14 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 
 public interface ServiceProvider {
-    
+
     /**
      * Creates a new {@link ServiceScope} that can be used to resolve scoped services.
      *
      * @return a {@link ServiceScope} that can be used to resolve scoped services
      */
     @NotNull ServiceScope createScope();
-    
+
     /**
      * Get service of class {@code serviceClass} from the {@link ServiceProvider}.
      *
@@ -39,7 +39,7 @@ public interface ServiceProvider {
      * @throws IllegalStateException if there is no service of class {@code serviceClass}
      */
     <T> @NotNull T getRequiredService(@NotNull Class<T> serviceClass) throws IllegalStateException;
-    
+
     /**
      * Get service of class {@code serviceClass} from the {@link ServiceProvider}.
      *
@@ -48,7 +48,7 @@ public interface ServiceProvider {
      * @return a service object of class {@code serviceClass} or null if there is no such service
      */
     <T> @Nullable T getService(@NotNull Class<T> serviceClass);
-    
+
     /**
      * Get a collection of services of class {@code serviceClass} from the {@link ServiceProvider}.
      *

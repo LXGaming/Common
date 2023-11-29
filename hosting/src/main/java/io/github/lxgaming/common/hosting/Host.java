@@ -21,7 +21,7 @@ import org.jetbrains.annotations.Blocking;
 import org.jetbrains.annotations.NotNull;
 
 public interface Host extends AutoCloseable {
-    
+
     /**
      * Initializes a new instance of the {@link HostBuilder}.
      *
@@ -30,19 +30,19 @@ public interface Host extends AutoCloseable {
     static @NotNull HostBuilder createBuilder() {
         return new HostBuilderImpl();
     }
-    
+
     /**
      * Start the host.
      */
     void start();
-    
+
     /**
      * Attempts to gracefully stop the host.
      *
      * @throws Exception if an exception was encountered while stopping
      */
     void stop() throws Exception;
-    
+
     /**
      * Runs the host and blocks the calling thread until shutdown.
      *
@@ -50,18 +50,18 @@ public interface Host extends AutoCloseable {
      */
     @Blocking
     void run() throws Exception;
-    
+
     /**
      * Runs the host, shutdown is handled asynchronously.
      */
     void runAsync();
-    
+
     /**
      * Blocks the calling thread until a shutdown is triggered.
      */
     @Blocking
     void waitForShutdown();
-    
+
     /**
      * The hosts configured {@link ServiceProvider}.
      *
