@@ -1,9 +1,0 @@
-include "common"
-
-[
-    "hosting",
-    "inject"
-].each {
-    include(it)
-    findProject(":$it")?.name = "common-$it"
-}

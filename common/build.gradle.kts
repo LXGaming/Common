@@ -1,9 +1,11 @@
-archivesBaseName = "common"
+base {
+    archivesName = "common"
+}
 
 publishing {
     publications {
-        mavenPublication(MavenPublication) {
-            from components.java
+        named<MavenPublication>("maven") {
+            from(components["java"])
             pom {
                 description = "Library with common utils"
             }

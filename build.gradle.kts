@@ -1,11 +1,18 @@
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+
 plugins {
+    id("java")
+    id("maven-publish")
+    id("signing")
 }
 
 subprojects {
-    apply plugin: "java"
-    apply plugin: "java-library"
-    apply plugin: "maven-publish"
-    apply plugin: "signing"
+    apply(plugin = "java-library")
+    apply(plugin = "maven-publish")
+    apply(plugin = "signing")
+
+    val annotationsVersion: String by project
+    val junitVersion: String by project
 
     group = "io.github.lxgaming"
 
@@ -14,8 +21,9 @@ subprojects {
     }
 
     dependencies {
-        implementation("org.jetbrains:annotations:24.1.0")
-        testImplementation("org.junit.jupiter:junit-jupiter-engine:5.10.2")
+        implementation("org.jetbrains:annotations:${annotationsVersion}")
+        testImplementation("org.junit.jupiter:junit-jupiter:${junitVersion}")
+        testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     }
 
     java {
@@ -26,22 +34,12 @@ subprojects {
         withSourcesJar()
     }
 
-    javadoc {
-        failOnError = false
-        options.addStringOption("Xdoclint:none", "-quiet")
-    }
-
-    processResources {
-        from("../LICENSE")
-        rename("LICENSE", "LICENSE-Common")
-    }
-
     publishing {
         publications {
-            mavenPublication(MavenPublication) {
-                groupId group
-                artifactId archivesBaseName
-                version version
+            create<MavenPublication>("maven") {
+                groupId = project.group.toString()
+                artifactId = project.base.archivesName.get()
+                version = project.version.toString()
                 pom {
                     name = "Common"
                     url = "https://github.com/LXGaming/Common"
@@ -73,10 +71,15 @@ subprojects {
             if (project.hasProperty("sonatypeUsername") && project.hasProperty("sonatypePassword")) {
                 maven {
                     name = "sonatype"
-                    url = version.contains("-SNAPSHOT") ? "https://s01.oss.sonatype.org/content/repositories/snapshots" : "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2"
+                    url = if (project.version.toString().contains("-SNAPSHOT")) {
+                        uri("https://s01.oss.sonatype.org/content/repositories/snapshots")
+                    } else {
+                        uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2")
+                    }
+
                     credentials {
-                        username project.property("sonatypeUsername")
-                        password project.property("sonatypePassword")
+                        username = project.property("sonatypeUsername").toString()
+                        password = project.property("sonatypePassword").toString()
                     }
                 }
             }
@@ -85,15 +88,32 @@ subprojects {
 
     signing {
         if (project.hasProperty("signingKey") && project.hasProperty("signingPassword")) {
-            useInMemoryPgpKeys(project.property("signingKey"), project.property("signingPassword"))
+            useInMemoryPgpKeys(
+                project.property("signingKey").toString(),
+                project.property("signingPassword").toString()
+            )
         }
 
-        sign publishing.publications
+        sign(publishing.publications["maven"])
     }
 
-    test {
+    tasks.javadoc {
+        isFailOnError = false
+        options {
+            this as CoreJavadocOptions
+
+            addStringOption("Xdoclint:none", "-quiet")
+        }
+    }
+
+    tasks.processResources {
+        from("../LICENSE")
+        rename("LICENSE", "LICENSE-Common")
+    }
+
+    tasks.test {
         testLogging {
-            exceptionFormat = "full"
+            exceptionFormat = TestExceptionFormat.FULL
         }
 
         useJUnitPlatform()
