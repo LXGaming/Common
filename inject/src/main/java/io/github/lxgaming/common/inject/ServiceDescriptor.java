@@ -57,16 +57,16 @@ public class ServiceDescriptor {
     }
 
     protected @NotNull Object createInstance(@NotNull ServiceProviderImpl provider) throws Throwable {
+        if (lifetime == ServiceLifetime.SCOPED && provider.isRoot()) {
+            throw new IllegalStateException(String.format("Cannot resolve '%s' from the root provider", serviceClass));
+        }
+
         if (implementationInstance != null) {
             return implementationInstance;
         }
 
         if (implementationFactory != null) {
             return implementationFactory.apply(provider);
-        }
-
-        if (lifetime == ServiceLifetime.SCOPED && provider.isRoot()) {
-            throw new IllegalStateException(String.format("Cannot resolve '%s' from the root provider", serviceClass));
         }
 
         MethodHandle methodHandle = getMethodHandle();
