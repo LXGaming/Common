@@ -142,7 +142,7 @@ public class ServiceDescriptor {
 
         ServiceDescriptor descriptor = (ServiceDescriptor) obj;
         return Objects.equals(serviceClass, descriptor.serviceClass)
-                && Objects.equals(implementationClass, descriptor.implementationClass);
+            && Objects.equals(implementationClass, descriptor.implementationClass);
     }
 
     @Override

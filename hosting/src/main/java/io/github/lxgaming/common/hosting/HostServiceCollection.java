@@ -36,7 +36,7 @@ public class HostServiceCollection extends ServiceCollection {
      */
     public @NotNull HostServiceCollection addHostedService(@NotNull Class<?> serviceClass, @NotNull Class<?> implementationClass) {
         return addSingleton(serviceClass, implementationClass)
-                .addSingleton(HostedService.class, serviceProvider -> serviceProvider.getRequiredService(serviceClass));
+            .addSingleton(HostedService.class, serviceProvider -> serviceProvider.getRequiredService(serviceClass));
     }
 
     /**
@@ -54,8 +54,8 @@ public class HostServiceCollection extends ServiceCollection {
 
             if (service.value() == ServiceLifetime.SINGLETON) {
                 Class<?> serviceClass = service.serviceClass() != Object.class
-                        ? service.serviceClass()
-                        : implementationClass;
+                    ? service.serviceClass()
+                    : implementationClass;
 
                 return addHostedService(serviceClass, implementationClass);
             }
@@ -65,8 +65,8 @@ public class HostServiceCollection extends ServiceCollection {
 
         if (service != null) {
             Class<?> serviceClass = service.serviceClass() != Object.class
-                    ? service.serviceClass()
-                    : implementationClass;
+                ? service.serviceClass()
+                : implementationClass;
 
             return add(serviceClass, implementationClass, service.value());
         }

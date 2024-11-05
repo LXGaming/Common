@@ -126,7 +126,8 @@ public interface HostEnvironment {
      *
      * @return the shutdown timeout in milliseconds
      */
-    @Range(from = 0, to = Long.MAX_VALUE) long getShutdownTimeout();
+    @Range(from = 0, to = Long.MAX_VALUE)
+    long getShutdownTimeout();
 
     /**
      * Configure the shutdown timeout.

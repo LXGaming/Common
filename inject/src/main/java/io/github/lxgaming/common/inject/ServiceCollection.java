@@ -66,8 +66,8 @@ public class ServiceCollection {
         }
 
         Class<?> serviceClass = service.serviceClass() != Object.class
-                ? service.serviceClass()
-                : implementationClass;
+            ? service.serviceClass()
+            : implementationClass;
 
         return add(serviceClass, implementationClass, service.value());
     }
