@@ -156,8 +156,6 @@ public class ServiceProviderImpl implements ServiceProvider, AutoCloseable {
             }
 
             return instance;
-        } catch (Throwable throwable) {
-            throw new IllegalStateException(throwable);
         } finally {
             deque.pollLast();
 

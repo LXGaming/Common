@@ -56,7 +56,7 @@ public class ServiceDescriptor {
         this.lifetime = lifetime;
     }
 
-    protected @NotNull Object createInstance(@NotNull ServiceProviderImpl provider) throws Throwable {
+    protected @NotNull Object createInstance(@NotNull ServiceProviderImpl provider) {
         if (lifetime == ServiceLifetime.SCOPED && provider.isRoot()) {
             throw new IllegalStateException(String.format("Cannot resolve '%s' from the root provider", serviceClass));
         }
@@ -97,20 +97,31 @@ public class ServiceDescriptor {
             parameters[index] = provider.getInstance(parameterDescriptor);
         }
 
-        return methodHandle.invokeWithArguments(parameters);
+        try {
+            return methodHandle.invokeWithArguments(parameters);
+        } catch (Throwable t) {
+            throw new RuntimeException(t);
+        }
     }
 
-    protected @NotNull MethodHandle getMethodHandle() throws IllegalAccessException {
-        if (methodHandle == null) {
-            synchronized (this) {
-                if (methodHandle == null) {
-                    Constructor<?>[] constructors = implementationClass.getConstructors();
-                    this.methodHandle = LOOKUP.unreflectConstructor(constructors[0]);
-                }
-            }
+    protected @NotNull MethodHandle getMethodHandle() {
+        if (methodHandle != null) {
+            return methodHandle;
         }
 
-        return methodHandle;
+        synchronized (this) {
+            if (methodHandle != null) {
+                return methodHandle;
+            }
+
+            try {
+                Constructor<?>[] constructors = implementationClass.getConstructors();
+                this.methodHandle = LOOKUP.unreflectConstructor(constructors[0]);
+                return methodHandle;
+            } catch (IllegalAccessException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
     }
 
     public @NotNull Class<?> getServiceClass() {
