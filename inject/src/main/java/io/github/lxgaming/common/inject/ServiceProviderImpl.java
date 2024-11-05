@@ -36,11 +36,11 @@ public class ServiceProviderImpl implements ServiceProvider, AutoCloseable {
     protected final Collection<AutoCloseable> closeables;
     protected final Deque<ServiceDescriptor> deque;
     protected final Lock lock;
-    protected ServiceProviderImpl parent;
+    protected ServiceProviderImpl rootProvider;
 
-    protected ServiceProviderImpl(@NotNull ServiceProviderImpl parent) {
-        this(parent.descriptors);
-        this.parent = parent;
+    protected ServiceProviderImpl(@NotNull ServiceProviderImpl rootProvider) {
+        this(rootProvider.descriptors);
+        this.rootProvider = rootProvider;
     }
 
     protected ServiceProviderImpl(@NotNull Collection<ServiceDescriptor> descriptors) {
@@ -51,10 +51,14 @@ public class ServiceProviderImpl implements ServiceProvider, AutoCloseable {
         this.lock = new ReentrantLock();
     }
 
+    @Override
     public @NotNull ServiceScope createScope() {
-        return new ServiceScope(new ServiceProviderImpl(parent != null ? parent : this));
+        ServiceProviderImpl rootProvider = getRootProvider();
+        ServiceProviderImpl scopeProvider = new ServiceProviderImpl(rootProvider);
+        return new ServiceScope(scopeProvider);
     }
 
+    @Override
     public <T> @NotNull T getRequiredService(@NotNull Class<T> serviceClass) throws IllegalStateException {
         T service = getService(serviceClass);
         if (service == null) {
@@ -64,6 +68,7 @@ public class ServiceProviderImpl implements ServiceProvider, AutoCloseable {
         return service;
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public <T> @Nullable T getService(@NotNull Class<T> serviceClass) {
         if (serviceClass.isInstance(this)) {
@@ -78,6 +83,7 @@ public class ServiceProviderImpl implements ServiceProvider, AutoCloseable {
         return getInstance(descriptor);
     }
 
+    @Override
     public <T> @NotNull List<T> getServices(@NotNull Class<T> serviceClass) {
         List<T> services = new ArrayList<>();
         for (ServiceDescriptor descriptor : descriptors) {
@@ -104,10 +110,11 @@ public class ServiceProviderImpl implements ServiceProvider, AutoCloseable {
         Map<ServiceDescriptor, Object> instances;
         Lock lock;
         if (descriptor.getLifetime() == ServiceLifetime.SINGLETON) {
-            instances = (parent != null ? parent : this).instances;
-            lock = (parent != null ? parent : this).lock;
+            ServiceProviderImpl rootProvider = getRootProvider();
+            instances = rootProvider.instances;
+            lock = rootProvider.lock;
         } else if (descriptor.getLifetime() == ServiceLifetime.SCOPED) {
-            if (parent == null) {
+            if (isRoot()) {
                 throw new IllegalStateException(String.format("Cannot resolve '%s' from the root provider", descriptor.serviceClass));
             }
 
@@ -158,6 +165,18 @@ public class ServiceProviderImpl implements ServiceProvider, AutoCloseable {
                 lock.unlock();
             }
         }
+    }
+
+    protected boolean isRoot() {
+        return rootProvider == null;
+    }
+
+    protected boolean isScope() {
+        return rootProvider != null;
+    }
+
+    protected @NotNull ServiceProviderImpl getRootProvider() {
+        return rootProvider != null ? rootProvider : this;
     }
 
     @Override

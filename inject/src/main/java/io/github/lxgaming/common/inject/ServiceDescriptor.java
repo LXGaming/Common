@@ -65,7 +65,7 @@ public class ServiceDescriptor {
             return implementationFactory.apply(provider);
         }
 
-        if (lifetime == ServiceLifetime.SCOPED && provider.parent == null) {
+        if (lifetime == ServiceLifetime.SCOPED && provider.isRoot()) {
             throw new IllegalStateException(String.format("Cannot resolve '%s' from the root provider", serviceClass));
         }
 
@@ -89,7 +89,7 @@ public class ServiceDescriptor {
                     throw new IllegalStateException(String.format("Cannot consume scoped service '%s' from singleton '%s'", parameterClass, serviceClass));
                 }
 
-                if (provider.parent == null) {
+                if (provider.isRoot()) {
                     throw new IllegalStateException(String.format("Cannot resolve '%s' from root provider because it requires scoped service '%s'", serviceClass, parameterClass));
                 }
             }
