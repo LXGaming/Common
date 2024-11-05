@@ -41,7 +41,7 @@ public abstract class Task implements Runnable {
         try {
             execute();
         } catch (Exception ex) {
-            exception(ex);
+            setException(ex);
             getScheduledFuture().cancel(false);
         }
     }
@@ -59,7 +59,7 @@ public abstract class Task implements Runnable {
                 ex.addSuppressed(getException());
             }
 
-            exception(ex);
+            setException(ex);
             return false;
         }
     }
@@ -77,7 +77,7 @@ public abstract class Task implements Runnable {
                 ex.addSuppressed(getException());
             }
 
-            exception(ex);
+            setException(ex);
             return false;
         }
     }
@@ -85,13 +85,13 @@ public abstract class Task implements Runnable {
     public final void schedule(@NotNull ScheduledExecutorService scheduledExecutorService) throws Exception {
         Preconditions.checkNotNull(type, "type");
 
-        exception(null);
+        setException(null);
         if (type == Type.DEFAULT) {
-            scheduledFuture(scheduledExecutorService.schedule(this, delay, TimeUnit.MILLISECONDS));
+            setScheduledFuture(scheduledExecutorService.schedule(this, delay, TimeUnit.MILLISECONDS));
         } else if (type == Type.FIXED_DELAY) {
-            scheduledFuture(scheduledExecutorService.scheduleWithFixedDelay(this, delay, interval, TimeUnit.MILLISECONDS));
+            setScheduledFuture(scheduledExecutorService.scheduleWithFixedDelay(this, delay, interval, TimeUnit.MILLISECONDS));
         } else if (type == Type.FIXED_RATE) {
-            scheduledFuture(scheduledExecutorService.scheduleAtFixedRate(this, delay, interval, TimeUnit.MILLISECONDS));
+            setScheduledFuture(scheduledExecutorService.scheduleAtFixedRate(this, delay, interval, TimeUnit.MILLISECONDS));
         }
     }
 
@@ -99,7 +99,7 @@ public abstract class Task implements Runnable {
         return delay;
     }
 
-    protected final void delay(long delay, @NotNull TimeUnit unit) {
+    protected final void setDelay(long delay, @NotNull TimeUnit unit) {
         this.delay = unit.toMillis(delay);
     }
 
@@ -107,7 +107,7 @@ public abstract class Task implements Runnable {
         return interval;
     }
 
-    protected final void interval(long interval, @NotNull TimeUnit unit) {
+    protected final void setInterval(long interval, @NotNull TimeUnit unit) {
         this.interval = unit.toMillis(interval);
     }
 
@@ -115,7 +115,7 @@ public abstract class Task implements Runnable {
         return type;
     }
 
-    protected final void type(@NotNull Type type) {
+    protected final void setType(@NotNull Type type) {
         this.type = type;
     }
 
@@ -123,7 +123,7 @@ public abstract class Task implements Runnable {
         return exception;
     }
 
-    protected final void exception(@Nullable Exception exception) {
+    protected final void setException(@Nullable Exception exception) {
         this.exception = exception;
     }
 
@@ -131,7 +131,7 @@ public abstract class Task implements Runnable {
         return scheduledFuture;
     }
 
-    protected final void scheduledFuture(@NotNull ScheduledFuture<?> scheduledFuture) {
+    protected final void setScheduledFuture(@NotNull ScheduledFuture<?> scheduledFuture) {
         this.scheduledFuture = scheduledFuture;
     }
 
