@@ -26,33 +26,33 @@ public class ServiceClassLoader extends ClassLoader {
     public Class<?> defineServiceClass(String name, Type... argumentTypes) {
         ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
         classWriter.visit(
-                Opcodes.V1_8,
-                Opcodes.ACC_PUBLIC,
-                "io/github/lxgaming/common/inject/service/dynamic/" + name,
-                null,
-                "io/github/lxgaming/common/inject/service/BaseService",
-                null
+            Opcodes.V1_8,
+            Opcodes.ACC_PUBLIC,
+            "io/github/lxgaming/common/inject/service/dynamic/" + name,
+            null,
+            "io/github/lxgaming/common/inject/service/BaseService",
+            null
         );
         MethodVisitor methodVisitor = classWriter.visitMethod(
-                Opcodes.ACC_PUBLIC,
-                "<init>",
-                Type.getMethodDescriptor(Type.VOID_TYPE, argumentTypes),
-                null,
-                null
+            Opcodes.ACC_PUBLIC,
+            "<init>",
+            Type.getMethodDescriptor(Type.VOID_TYPE, argumentTypes),
+            null,
+            null
         );
         methodVisitor.visitVarInsn(
-                Opcodes.ALOAD,
-                0
+            Opcodes.ALOAD,
+            0
         );
         methodVisitor.visitMethodInsn(
-                Opcodes.INVOKESPECIAL,
-                "io/github/lxgaming/common/inject/service/BaseService",
-                "<init>",
-                "()V",
-                false
+            Opcodes.INVOKESPECIAL,
+            "io/github/lxgaming/common/inject/service/BaseService",
+            "<init>",
+            "()V",
+            false
         );
         methodVisitor.visitInsn(
-                Opcodes.RETURN
+            Opcodes.RETURN
         );
         methodVisitor.visitMaxs(-1, -1);
         methodVisitor.visitEnd();
