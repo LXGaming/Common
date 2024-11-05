@@ -107,61 +107,61 @@ public class ServiceProviderImpl implements ServiceProvider, AutoCloseable {
 
     @SuppressWarnings("unchecked")
     protected <T> @NotNull T getInstance(@NotNull ServiceDescriptor descriptor) {
-        Map<ServiceDescriptor, Object> instances;
-        Lock lock;
         if (descriptor.getLifetime() == ServiceLifetime.SINGLETON) {
-            ServiceProviderImpl rootProvider = getRootProvider();
-            instances = rootProvider.instances;
-            lock = rootProvider.lock;
+            if (isScope()) {
+                return getRootProvider().getInstance(descriptor);
+            }
         } else if (descriptor.getLifetime() == ServiceLifetime.SCOPED) {
             if (isRoot()) {
                 throw new IllegalStateException(String.format("Cannot resolve '%s' from the root provider", descriptor.serviceClass));
             }
-
-            instances = this.instances;
-            lock = this.lock;
+        } else if (descriptor.getLifetime() == ServiceLifetime.TRANSIENT) {
+            return createInstance(descriptor);
         } else {
-            instances = null;
-            lock = null;
+            throw new IllegalStateException(String.format("%s is not supported", descriptor.getLifetime()));
         }
 
-        if (instances != null && lock != null) {
-            Object preInstance = instances.get(descriptor);
-            if (preInstance != null) {
-                return (T) preInstance;
-            }
+        Object preInstance = instances.get(descriptor);
+        if (preInstance != null) {
+            return (T) preInstance;
+        }
 
-            lock.lock();
-
+        lock.lock();
+        try {
             Object postInstance = instances.get(descriptor);
             if (postInstance != null) {
                 return (T) postInstance;
             }
-        }
 
-        if (deque.contains(descriptor)) {
-            throw new IllegalStateException("Re-entrant detected");
-        }
-
-        deque.offerLast(descriptor);
-
-        try {
-            T instance = (T) descriptor.createInstance(this);
-            if (instances != null) {
-                instances.put(descriptor, instance);
-            }
-
-            if (instance instanceof AutoCloseable) {
-                closeables.add((AutoCloseable) instance);
-            }
-
+            T instance = createInstance(descriptor);
+            instances.put(descriptor, instance);
             return instance;
         } finally {
-            deque.pollLast();
+            lock.unlock();
+        }
+    }
 
-            if (lock != null) {
-                lock.unlock();
+    @SuppressWarnings("unchecked")
+    protected <T> @NotNull T createInstance(@NotNull ServiceDescriptor descriptor) {
+        lock.lock();
+        try {
+            if (deque.contains(descriptor)) {
+                throw new IllegalStateException("Re-entrant detected");
             }
+
+            deque.addLast(descriptor);
+            try {
+                T instance = (T) descriptor.createInstance(this);
+                if (instance instanceof AutoCloseable) {
+                    closeables.add((AutoCloseable) instance);
+                }
+
+                return instance;
+            } finally {
+                deque.removeLast();
+            }
+        } finally {
+            lock.unlock();
         }
     }
 
