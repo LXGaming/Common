@@ -107,8 +107,10 @@ subprojects {
     }
 
     tasks.processResources {
-        from("../LICENSE")
-        rename("LICENSE", "LICENSE-Common")
+        from("../LICENSE") {
+            into("META-INF")
+            rename { "${it}-Common" }
+        }
     }
 
     tasks.test {
