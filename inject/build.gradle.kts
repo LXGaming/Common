@@ -8,13 +8,8 @@ dependencies {
     testImplementation("org.ow2.asm:asm:${asmVersion}")
 }
 
-publishing {
-    publications {
-        named<MavenPublication>("maven") {
-            from(components["java"])
-            pom {
-                description = "Lightweight* dependency injection framework for Java"
-            }
-        }
+mavenPublishing {
+    pom {
+        description.set("Lightweight* dependency injection framework for Java")
     }
 }

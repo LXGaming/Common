@@ -10,14 +10,9 @@ dependencies {
     testImplementation("org.slf4j:slf4j-simple:${slf4jVersion}")
 }
 
-publishing {
-    publications {
-        named<MavenPublication>("maven") {
-            from(components["java"])
-            pom {
-                description = "Hosting framework for Java"
-            }
-        }
+mavenPublishing {
+    pom {
+        description.set("Hosting framework for Java")
     }
 }
 
