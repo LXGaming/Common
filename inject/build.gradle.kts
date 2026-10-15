@@ -1,4 +1,4 @@
-val asmVersion: String by project
+val asmVersion = project.property("asmVersion") as String
 
 base {
     archivesName = "common-inject"
